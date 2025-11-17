@@ -1,7 +1,7 @@
 import os
 import json
-import base64               # ← Added
-import requests             # ← Added
+import base64               # ← diperlukan Solusi C
+import requests             # ← diperlukan Solusi C
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -13,7 +13,7 @@ from langchain.prompts import PromptTemplate
 
 
 # ======================================================
-# 🔵 FUNGSI UPLOAD KE GITHUB (MINIMAL, WAJIB UTK SOLUSI C)
+# 🔵 FUNGSI UPLOAD KE GITHUB (Solusi C)
 # ======================================================
 def upload_to_github(local_path, github_path):
     """Upload a local file to GitHub repo."""
@@ -39,6 +39,26 @@ def upload_to_github(local_path, github_path):
 
 
 
+# ======================================================
+# 🔐 WHITELIST EMAIL UNTUK UPLOAD (Opsi 2)
+# ======================================================
+def restrict_upload_access():
+    user = st.experimental_user
+
+    if not user or not user.email:
+        st.error("Anda harus login untuk mengakses fitur upload.")
+        st.stop()
+
+    allowed = st.secrets["auth"]["allowed_users"]
+
+    if user.email not in allowed:
+        st.warning(f"Akses upload dibatasi. Email anda ({user.email}) tidak memiliki izin.")
+        return False
+
+    return True
+
+
+
 # =========================
 # 📁 FILE STATE MANAGEMENT
 # =========================
@@ -49,7 +69,7 @@ def save_state(file_names):
     with open(STATE_FILE, "w") as f:
         json.dump({"processed_files": file_names}, f)
 
-    # ← MODIFIKASI SOLUSI C
+    # Upload ke GitHub (Solusi C)
     upload_to_github(STATE_FILE, "app_state.json")
 
 
@@ -87,7 +107,7 @@ def create_vector_store(chunks):
 
     vector_store.save_local("faiss_index")  # tetap ada
 
-    # ← MODIFIKASI SOLUSI C
+    # ← Upload FAISS ke GitHub (Solusi C)
     upload_to_github("faiss_index/index.faiss", "faiss_index/index.faiss")
     upload_to_github("faiss_index/index.pkl", "faiss_index/index.pkl")
 
@@ -155,19 +175,26 @@ def main():
 
     with st.sidebar:
         st.header("📂 Unggah & Proses Dokumen")
-        pdf_docs = st.file_uploader("Unggah File PDF", accept_multiple_files=True, type=["pdf"])
 
-        if st.button("Submit & Process"):
-            if pdf_docs:
-                uploaded_names = [pdf.name for pdf in pdf_docs]
-                with st.spinner("🔄 Membaca dan memproses dokumen..."):
-                    raw_text = get_pdf_text(pdf_docs)
-                    text_chunks = get_text_chunks(raw_text)
-                    create_vector_store(text_chunks)
-                    save_state(uploaded_names)
-                    st.success("✅ Dokumen berhasil diproses dan disimpan.")
-            else:
-                st.warning("⚠️ Tolong unggah minimal satu dokumen.")
+        # 🔐 Terapkan pembatasan upload untuk whitelist email
+        can_upload = restrict_upload_access()
+
+        if can_upload:
+            pdf_docs = st.file_uploader("Unggah File PDF", accept_multiple_files=True, type=["pdf"])
+
+            if st.button("Submit & Process"):
+                if pdf_docs:
+                    uploaded_names = [pdf.name for pdf in pdf_docs]
+                    with st.spinner("🔄 Membaca dan memproses dokumen..."):
+                        raw_text = get_pdf_text(pdf_docs)
+                        text_chunks = get_text_chunks(raw_text)
+                        create_vector_store(text_chunks)
+                        save_state(uploaded_names)
+                        st.success("✅ Dokumen berhasil diproses dan disimpan.")
+                else:
+                    st.warning("⚠️ Tolong unggah minimal satu dokumen.")
+        else:
+            st.info("Login sebagai admin untuk mengunggah dokumen.")
 
         st.button("🧹 Bersihkan Jejak Digital", on_click=clear_chat_history)
 
