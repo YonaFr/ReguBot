@@ -157,12 +157,13 @@ def clear_chat_history():
 
 
 def user_input(user_question):
+    if not os.path.exists("faiss_index"):
+        return {"output_text": "❗ Belum ada data. Silakan upload dan proses dokumen PDF dulu."}
+
     db = load_vector_store()
     docs = db.similarity_search(user_question)
-
     chain = get_conversational_chain()
     return chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
-
 
 # =========================
 # 🚀 MAIN STREAMLIT APP
