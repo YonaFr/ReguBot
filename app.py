@@ -1,15 +1,17 @@
 import os
 import json
-import base64               # ← Added
-import requests             # ← Added
+import base64
+import requests
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.chat_models import ChatOllama
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
+
+# === GEMINI ===
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 # ======================================================
@@ -23,7 +25,7 @@ def upload_to_github(local_path, github_path):
     url = f"https://api.github.com/repos/{st.secrets['github']['repo']}/contents/{github_path}"
     headers = {"Authorization": f"token {st.secrets['github']['token']}"}
 
-    # Check if exists → needed for updating file (SHA)
+    # Check if file exists (needed for update SHA)
     get_res = requests.get(url, headers=headers)
     sha = get_res.json().get("sha") if get_res.status_code == 200 else None
 
@@ -49,7 +51,6 @@ def save_state(file_names):
     with open(STATE_FILE, "w") as f:
         json.dump({"processed_files": file_names}, f)
 
-    # ← MODIFIKASI SOLUSI C
     upload_to_github(STATE_FILE, "app_state.json")
 
 
@@ -78,16 +79,18 @@ def get_text_chunks(text):
 
 
 # =========================
-# 🧠 VECTOR STORE CREATION
+# 🧠 VECTOR STORE CREATION (GEMINI)
 # =========================
 @st.cache_resource(show_spinner=False)
 def create_vector_store(chunks):
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        google_api_key=st.secrets["gemini"]["api_key"]
+    )
+
     vector_store = FAISS.from_texts(chunks, embedding=embeddings)
+    vector_store.save_local("faiss_index")
 
-    vector_store.save_local("faiss_index")  # tetap ada
-
-    # ← MODIFIKASI SOLUSI C
     upload_to_github("faiss_index/index.faiss", "faiss_index/index.faiss")
     upload_to_github("faiss_index/index.pkl", "faiss_index/index.pkl")
 
@@ -96,12 +99,16 @@ def create_vector_store(chunks):
 
 @st.cache_resource(show_spinner=False)
 def load_vector_store():
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        google_api_key=st.secrets["gemini"]["api_key"]
+    )
+
     return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
 
 
 # =========================
-# 🤖 QA CHAIN (LLM + PROMPT)
+# 🤖 QA CHAIN (LLM + PROMPT) — GEMINI LLM
 # =========================
 @st.cache_resource(show_spinner=False)
 def get_conversational_chain():
@@ -119,11 +126,17 @@ def get_conversational_chain():
     Answer:
     """
 
-    model = ChatOllama(model="llama3.2", temperature=0.3)
+    model = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",
+        temperature=0.3,
+        google_api_key=st.secrets["gemini"]["api_key"]
+    )
+
     prompt = PromptTemplate(
         template=prompt_template,
         input_variables=["context", "question"]
     )
+
     return load_qa_chain(llm=model, chain_type="stuff", prompt=prompt)
 
 
@@ -153,6 +166,7 @@ def main():
 
     state = load_state()
 
+    # Sidebar
     with st.sidebar:
         st.header("📂 Unggah & Proses Dokumen")
         pdf_docs = st.file_uploader("Unggah File PDF", accept_multiple_files=True, type=["pdf"])
@@ -176,13 +190,16 @@ def main():
             for f in state["processed_files"]:
                 st.write(f"• {f}")
 
+    # Chat initialization
     if "messages" not in st.session_state:
         clear_chat_history()
 
+    # Display historical messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+    # New user chat
     if prompt := st.chat_input("Ketik di sini..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
