@@ -1,45 +1,13 @@
 import os
 import json
-import base64
-import requests
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.chat_models import ChatOllama
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
-
-# === GEMINI ===
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_google_genai import ChatGoogleGenerativeAI
-
-
-# ======================================================
-# 🔵 FUNGSI UPLOAD KE GITHUB (MINIMAL, WAJIB UTK SOLUSI C)
-# ======================================================
-def upload_to_github(local_path, github_path):
-    """Upload a local file to GitHub repo."""
-    with open(local_path, "rb") as f:
-        encoded = base64.b64encode(f.read()).decode()
-
-    url = f"https://api.github.com/repos/{st.secrets['github']['repo']}/contents/{github_path}"
-    headers = {"Authorization": f"token {st.secrets['github']['token']}"}
-
-    # Check if file exists (needed for update SHA)
-    get_res = requests.get(url, headers=headers)
-    sha = get_res.json().get("sha") if get_res.status_code == 200 else None
-
-    payload = {
-        "message": f"update {github_path}",
-        "content": encoded,
-        "branch": st.secrets["github"]["branch"]
-    }
-    if sha:
-        payload["sha"] = sha
-
-    requests.put(url, json=payload, headers=headers)
-
-
 
 # =========================
 # 📁 FILE STATE MANAGEMENT
@@ -47,12 +15,8 @@ def upload_to_github(local_path, github_path):
 STATE_FILE = "app_state.json"
 
 def save_state(file_names):
-    """Save state locally + upload to GitHub."""
     with open(STATE_FILE, "w") as f:
         json.dump({"processed_files": file_names}, f)
-
-    upload_to_github(STATE_FILE, "app_state.json")
-
 
 def load_state():
     if os.path.exists(STATE_FILE):
@@ -65,6 +29,7 @@ def load_state():
 # 📄 PDF PROCESSING
 # =========================
 def get_pdf_text(pdf_docs):
+    """Extract text from a list of uploaded PDF files."""
     text = ""
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
@@ -74,44 +39,37 @@ def get_pdf_text(pdf_docs):
 
 
 def get_text_chunks(text):
+    """Split extracted text into smaller overlapping chunks."""
     splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
-    return splitter.split_text(text)
+    chunks = splitter.split_text(text)
+    return chunks
 
 
 # =========================
-# 🧠 VECTOR STORE CREATION (GEMINI)
+# 🧠 VECTOR STORE CREATION
 # =========================
 @st.cache_resource(show_spinner=False)
 def create_vector_store(chunks):
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
-        google_api_key=st.secrets["gemini"]["api_key"]
-    )
-
+    """Create FAISS vector store & cache it."""
+    embeddings = OllamaEmbeddings(model="llama3.2")
     vector_store = FAISS.from_texts(chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
-
-    upload_to_github("faiss_index/index.faiss", "faiss_index/index.faiss")
-    upload_to_github("faiss_index/index.pkl", "faiss_index/index.pkl")
-
     return vector_store
 
 
 @st.cache_resource(show_spinner=False)
 def load_vector_store():
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
-        google_api_key=st.secrets["gemini"]["api_key"]
-    )
-
+    """Load FAISS vector store (cached)."""
+    embeddings = OllamaEmbeddings(model="llama3.2")
     return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
 
 
 # =========================
-# 🤖 QA CHAIN (LLM + PROMPT) — GEMINI LLM
+# 🤖 QA CHAIN (LLM + PROMPT)
 # =========================
 @st.cache_resource(show_spinner=False)
 def get_conversational_chain():
+    """Create QA chain with Llama 3.2 model via Ollama."""
     prompt_template = """
     Answer the question using the provided context as accurately as possible.
     If the answer is not found in the context, simply reply:
@@ -126,35 +84,33 @@ def get_conversational_chain():
     Answer:
     """
 
-    model = ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
-        temperature=0.3,
-        google_api_key=st.secrets["gemini"]["api_key"]
-    )
-
+    model = ChatOllama(model="llama3.2", temperature=0.3)
     prompt = PromptTemplate(
         template=prompt_template,
         input_variables=["context", "question"]
     )
-
-    return load_qa_chain(llm=model, chain_type="stuff", prompt=prompt)
+    chain = load_qa_chain(llm=model, chain_type="stuff", prompt=prompt)
+    return chain
 
 
 # =========================
 # 💬 CHAT HANDLING
 # =========================
 def clear_chat_history():
+    """Reset chat history."""
     st.session_state.messages = [
         {"role": "assistant", "content": "Tanyakan apapun terkait regulasi pengadaan barang/jasa."}
     ]
 
 
 def user_input(user_question):
+    """Perform similarity search & get answer."""
     db = load_vector_store()
     docs = db.similarity_search(user_question)
 
     chain = get_conversational_chain()
-    return chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+    response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+    return response
 
 
 # =========================
@@ -164,6 +120,7 @@ def main():
     st.set_page_config(page_title="ReguBot | Regulasi ChatBot", page_icon="🤖")
     st.title("Selamat datang di ReguBot!")
 
+    # Load state info
     state = load_state()
 
     # Sidebar
@@ -190,19 +147,18 @@ def main():
             for f in state["processed_files"]:
                 st.write(f"• {f}")
 
-    # Chat initialization
+    # Initialize chat
     if "messages" not in st.session_state:
         clear_chat_history()
 
-    # Display historical messages
+    # Display previous messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # New user chat
+    # Chat input
     if prompt := st.chat_input("Ketik di sini..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
-
         with st.chat_message("user"):
             st.markdown(prompt)
 
@@ -212,6 +168,7 @@ def main():
                     response = user_input(prompt)
                     full_response = response.get("output_text", "")
                     st.markdown(full_response)
+
                     st.session_state.messages.append(
                         {"role": "assistant", "content": full_response}
                     )
