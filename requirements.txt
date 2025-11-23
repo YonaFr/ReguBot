@@ -6,3 +6,4 @@ langchain-google-genai>=0.1.0
 langchain-community>=0.2.0
 PyPDF2
 faiss-cpu
+PyGithub
