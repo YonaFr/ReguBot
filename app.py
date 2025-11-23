@@ -57,7 +57,10 @@ def get_text_chunks(text):
 # =========================
 @st.cache_resource(show_spinner=False)
 def create_vector_store(chunks):
-    embeddings = GoogleGenerativeAIEmbeddings(model="text-embedding-004")  # FIX
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="text-embedding-004",
+        api_key=st.secrets["GEMINI_API_KEY"]  # PAKAI API KEY LANGSUNG
+    )
     vector_store = FAISS.from_texts(chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
     return vector_store
@@ -65,9 +68,11 @@ def create_vector_store(chunks):
 
 @st.cache_resource(show_spinner=False)
 def load_vector_store():
-    embeddings = GoogleGenerativeAIEmbeddings(model="text-embedding-004")  # FIX
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="text-embedding-004",
+        api_key=st.secrets["GEMINI_API_KEY"]  # PAKAI API KEY LANGSUNG
+    )
     return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
-
 
 # =========================
 # 🤖 QA CHAIN (LLM + PROMPT)
