@@ -47,7 +47,7 @@ def get_pdf_text(pdf_docs):
 
 
 def get_text_chunks(text):
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=50)
     chunks = splitter.split_text(text)
     return chunks
 
@@ -59,7 +59,7 @@ def get_text_chunks(text):
 def create_vector_store(chunks):
     embeddings = GoogleGenerativeAIEmbeddings(
         model="text-embedding-004",
-        api_key=st.secrets["GEMINI_API_KEY"]  # PAKAI API KEY LANGSUNG
+        api_key=st.secrets["GEMINI_API_KEY"]
     )
     vector_store = FAISS.from_texts(chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
@@ -70,7 +70,7 @@ def create_vector_store(chunks):
 def load_vector_store():
     embeddings = GoogleGenerativeAIEmbeddings(
         model="text-embedding-004",
-        api_key=st.secrets["GEMINI_API_KEY"]  # PAKAI API KEY LANGSUNG
+        api_key=st.secrets["GEMINI_API_KEY"]
     )
     return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
 
