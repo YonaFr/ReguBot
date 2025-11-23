@@ -3,11 +3,20 @@ import json
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.chat_models import ChatOllama
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
+
+# Gemini
+import google.generativeai as genai
+from langchain_google_genai import (
+    GoogleGenerativeAIEmbeddings,
+    ChatGoogleGenerativeAI
+)
+
+# Konfigurasi API Key
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+
 
 # =========================
 # 📁 FILE STATE MANAGEMENT
@@ -29,7 +38,6 @@ def load_state():
 # 📄 PDF PROCESSING
 # =========================
 def get_pdf_text(pdf_docs):
-    """Extract text from a list of uploaded PDF files."""
     text = ""
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
@@ -39,7 +47,6 @@ def get_pdf_text(pdf_docs):
 
 
 def get_text_chunks(text):
-    """Split extracted text into smaller overlapping chunks."""
     splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
     chunks = splitter.split_text(text)
     return chunks
@@ -50,8 +57,7 @@ def get_text_chunks(text):
 # =========================
 @st.cache_resource(show_spinner=False)
 def create_vector_store(chunks):
-    """Create FAISS vector store & cache it."""
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     vector_store = FAISS.from_texts(chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
     return vector_store
@@ -59,8 +65,7 @@ def create_vector_store(chunks):
 
 @st.cache_resource(show_spinner=False)
 def load_vector_store():
-    """Load FAISS vector store (cached)."""
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     return FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
 
 
@@ -69,7 +74,6 @@ def load_vector_store():
 # =========================
 @st.cache_resource(show_spinner=False)
 def get_conversational_chain():
-    """Create QA chain with Llama 3.2 model via Ollama."""
     prompt_template = """
     Answer the question using the provided context as accurately as possible.
     If the answer is not found in the context, simply reply:
@@ -84,11 +88,16 @@ def get_conversational_chain():
     Answer:
     """
 
-    model = ChatOllama(model="llama3.2", temperature=0.3)
+    model = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",
+        temperature=0.3
+    )
+
     prompt = PromptTemplate(
         template=prompt_template,
         input_variables=["context", "question"]
     )
+
     chain = load_qa_chain(llm=model, chain_type="stuff", prompt=prompt)
     return chain
 
@@ -97,19 +106,20 @@ def get_conversational_chain():
 # 💬 CHAT HANDLING
 # =========================
 def clear_chat_history():
-    """Reset chat history."""
     st.session_state.messages = [
         {"role": "assistant", "content": "Tanyakan apapun terkait regulasi pengadaan barang/jasa."}
     ]
 
 
 def user_input(user_question):
-    """Perform similarity search & get answer."""
     db = load_vector_store()
     docs = db.similarity_search(user_question)
 
     chain = get_conversational_chain()
-    response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+    response = chain(
+        {"input_documents": docs, "question": user_question},
+        return_only_outputs=True
+    )
     return response
 
 
@@ -120,10 +130,8 @@ def main():
     st.set_page_config(page_title="ReguBot | Regulasi ChatBot", page_icon="🤖")
     st.title("Selamat datang di ReguBot!")
 
-    # Load state info
     state = load_state()
 
-    # Sidebar
     with st.sidebar:
         st.header("📂 Unggah & Proses Dokumen")
         pdf_docs = st.file_uploader("Unggah File PDF", accept_multiple_files=True, type=["pdf"])
@@ -147,16 +155,13 @@ def main():
             for f in state["processed_files"]:
                 st.write(f"• {f}")
 
-    # Initialize chat
     if "messages" not in st.session_state:
         clear_chat_history()
 
-    # Display previous messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Chat input
     if prompt := st.chat_input("Ketik di sini..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
@@ -173,8 +178,4 @@ def main():
                         {"role": "assistant", "content": full_response}
                     )
                 except Exception as e:
-                    st.error(f"❌ Error: {e}")
-
-
-if __name__ == "__main__":
-    main()
+                    st.error(f"❌ Erro
