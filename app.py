@@ -178,4 +178,8 @@ def main():
                         {"role": "assistant", "content": full_response}
                     )
                 except Exception as e:
-                    st.error(f"❌ Erro
+                    st.error(f"❌ Error: {e}")
+
+
+if __name__ == "__main__":
+    main()
