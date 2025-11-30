@@ -3,13 +3,12 @@ import json
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from dotenv import load_dotenv
 import requests
 
 load_dotenv()
-
 
 
 # ====================================
@@ -20,7 +19,6 @@ GEMINI_ENDPOINT = (
     "gemini-2.5-flash:generateContent"
 )
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
 
 
 # ====================================
@@ -44,7 +42,6 @@ def load_state():
     return {"processed_files": []}
 
 
-
 # ====================================
 # 📄 PDF PROCESSING
 # ====================================
@@ -63,12 +60,11 @@ def get_text_chunks(text):
     return splitter.split_text(text)
 
 
-
 # ====================================
 # 🧠 VECTOR STORE UPDATE (FAISS)
 # ====================================
 def create_or_update_vector_store(chunks):
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-small")
 
     try:
         if os.path.exists("faiss_index"):
@@ -93,13 +89,12 @@ def create_or_update_vector_store(chunks):
         return db
 
 
-
 # ====================================
 # 🧠 LOAD FAISS (CACHED)
 # ====================================
 @st.cache_resource(show_spinner=False)
 def load_vector_store():
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-small")
 
     try:
         return FAISS.load_local(
@@ -108,13 +103,11 @@ def load_vector_store():
             allow_dangerous_deserialization=True
         )
     except:
-        # recovery
         return FAISS.from_texts([""], embedding=embeddings)
 
 
-
 # ====================================
-# 🤖 GEMINI PROMPT (RAG)
+# 🤖 PROMPT BUILDER (RAG)
 # ====================================
 def build_gemini_prompt(question, context):
     template = f"""
@@ -124,7 +117,7 @@ Jika jawaban tidak ditemukan secara eksplisit dalam konteks,
 jawab dengan:
 "Tidak tersedia atau tidak diatur dalam daftar regulasi yang ditentukan."
 
-Konteks (hasil pencarian regulasi terkait):
+Konteks regulasi relevan:
 {context}
 
 Pertanyaan:
@@ -135,22 +128,19 @@ Jawaban:
     return template
 
 
-
 # ====================================
-# 🤖 RAG + GEMINI ANSWER
+# 🤖 RAG + GEMINI QA
 # ====================================
 def user_input(user_question):
-    # 1. Load FAISS
+    # FAISS search
     db = load_vector_store()
-
-    # 2. Ambil chunk paling relevan
     docs = db.similarity_search(user_question, k=5)
     context = "\n\n".join([d.page_content for d in docs])
 
-    # 3. Build prompt
+    # Prompt
     prompt = build_gemini_prompt(user_question, context)
 
-    # 4. Call Gemini REST API
+    # Gemini REST API call
     url = f"{GEMINI_ENDPOINT}?key={GEMINI_API_KEY}"
     payload = {
         "contents": [
@@ -173,7 +163,6 @@ def user_input(user_question):
         return {"output_text": f"❌ Error from Gemini API: {e}"}
 
 
-
 # ====================================
 # 💬 CHAT HANDLING
 # ====================================
@@ -181,7 +170,6 @@ def clear_chat_history():
     st.session_state.messages = [
         {"role": "assistant", "content": "Tanyakan apapun terkait regulasi pengadaan barang/jasa."}
     ]
-
 
 
 # ====================================
@@ -193,7 +181,7 @@ def main():
 
     state = load_state()
 
-    # Sidebar (TIDAK DIUBAH)
+    # Sidebar — TIDAK DIUBAH
     with st.sidebar:
         st.header("📂 Unggah & Proses Dokumen")
         pdf_docs = st.file_uploader("Unggah File PDF", accept_multiple_files=True, type=["pdf"])
@@ -219,16 +207,15 @@ def main():
             for f in state["processed_files"]:
                 st.write(f"• " + f)
 
-    # Init chat history
+    # Init chat
     if "messages" not in st.session_state:
         clear_chat_history()
 
-    # Render chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # User question
+    # Chat input
     if prompt := st.chat_input("Ketik di sini..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
