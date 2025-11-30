@@ -104,16 +104,24 @@ Pertanyaan:
 {question}
 
 Jawaban:
-- Berikan jawaban secara jelas dan lengkap.
-- Sertakan bagian “Sumber Regulasi” di akhir jawaban.
+- Berikan jawaban secara jelas dan lengkap 
+- Sertakan bagian “Sumber Regulasi” di akhir jawaban dengan format:
+  Nama Regulasi, Pasal X ayat (Y)
+- Jangan sertakan teks jawaban lengkap Sumber Regulasi.
 
-Contoh format jawaban:
+Format jawaban:
 
 Jawaban:
 [Isi jawaban yang relevan]
 
 Sumber Regulasi:
 [Cuplikan atau referensi regulasi yang relevan]
+
+Contoh jawaban:
+
+Jawaban: Jabatan Kepala Desa adalah selama 8 (delapan) tahun terhitung sejak tanggal pelantikan. Kepala Desa dapat menjabat paling banyak 2 (dua) kali masa jabatan, baik secara berturut-turut maupun tidak secara berturut-turut.
+
+Sumber Regulasi: Undang-Undang Republik Indonesia Nomor 3 Tahun 2024 tentang Perubahan Kedua atas Undang-Undang Nomor 6 Tahun 2014 tentang Desa, Pasal 1 angka 10, yang mengubah ketentuan Pasal 39 Undang-Undang Nomor 6 Tahun 2014 
 """
     return template.format(question=question)
 
