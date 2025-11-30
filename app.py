@@ -66,11 +66,10 @@ def get_text_chunks(text):
 # =========================
 def build_gemini_prompt(question):
     template = """
-Jawablah pertanyaan berikut HANYA berdasarkan pada informasi yang termuat dalam regulasi di bawah ini. 
-JANGAN gunakan pengetahuan umum atau sumber informasi eksternal lainnya. 
-Jika jawaban untuk pertanyaan tersebut tidak ditemukan secara eksplisit dalam daftar regulasi ini, 
-nyatakan bahwa informasi tersebut:
-"Tidak tersedia atau tidak diatur dalam daftar regulasi yang ditentukan."
+Jawablah pertanyaan berikut berdasarkan informasi yang termuat dalam regulasi di bawah ini.
+Jika jawaban dapat ditemukan dalam regulasi, gunakan informasi dari regulasi tersebut.
+Jika jawaban tidak ditemukan secara eksplisit dalam regulasi, Anda boleh menggunakan sumber informasi eksternal.
+WAJIB sertakan referensi atau kutipan dari regulasi yang relevan.
 
 Daftar Regulasi:
 1. UU No 3 Tahun 2024
