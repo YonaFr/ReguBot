@@ -64,7 +64,7 @@ def get_text_chunks(text):
 # 🧠 VECTOR STORE UPDATE (FAISS)
 # ====================================
 def create_or_update_vector_store(chunks):
-    embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-small")
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     try:
         if os.path.exists("faiss_index"):
@@ -94,7 +94,7 @@ def create_or_update_vector_store(chunks):
 # ====================================
 @st.cache_resource(show_spinner=False)
 def load_vector_store():
-    embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-small")
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     try:
         return FAISS.load_local(
@@ -107,7 +107,7 @@ def load_vector_store():
 
 
 # ====================================
-# 🤖 PROMPT BUILDER (RAG)
+# 🤖 PROMPT BUILDER
 # ====================================
 def build_gemini_prompt(question, context):
     template = f"""
@@ -132,15 +132,12 @@ Jawaban:
 # 🤖 RAG + GEMINI QA
 # ====================================
 def user_input(user_question):
-    # FAISS search
     db = load_vector_store()
     docs = db.similarity_search(user_question, k=5)
     context = "\n\n".join([d.page_content for d in docs])
 
-    # Prompt
     prompt = build_gemini_prompt(user_question, context)
 
-    # Gemini REST API call
     url = f"{GEMINI_ENDPOINT}?key={GEMINI_API_KEY}"
     payload = {
         "contents": [
@@ -181,7 +178,6 @@ def main():
 
     state = load_state()
 
-    # Sidebar — TIDAK DIUBAH
     with st.sidebar:
         st.header("📂 Unggah & Proses Dokumen")
         pdf_docs = st.file_uploader("Unggah File PDF", accept_multiple_files=True, type=["pdf"])
@@ -207,7 +203,6 @@ def main():
             for f in state["processed_files"]:
                 st.write(f"• " + f)
 
-    # Init chat
     if "messages" not in st.session_state:
         clear_chat_history()
 
@@ -215,7 +210,6 @@ def main():
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Chat input
     if prompt := st.chat_input("Ketik di sini..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
