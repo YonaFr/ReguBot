@@ -1,29 +1,31 @@
 import os
 import json
-import requests
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain.vectorstores import FAISS
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
 
 
-# =========================
-# 🔵 GOOGLE GEMINI (REST API)
-# =========================
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# ====================================
+# 🔵 GOOGLE GEMINI (REST API CONFIG)
+# ====================================
 GEMINI_ENDPOINT = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "gemini-2.5-flash:generateContent"
 )
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 
-# =========================
+# ====================================
 # 📁 FILE STATE MANAGEMENT
-# =========================
+# ====================================
 STATE_FILE = "app_state.json"
 
 def save_state(new_file_names):
@@ -34,6 +36,7 @@ def save_state(new_file_names):
     with open(STATE_FILE, "w") as f:
         json.dump({"processed_files": updated}, f)
 
+
 def load_state():
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r") as f:
@@ -42,9 +45,9 @@ def load_state():
 
 
 
-# =========================
+# ====================================
 # 📄 PDF PROCESSING
-# =========================
+# ====================================
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -61,60 +64,100 @@ def get_text_chunks(text):
 
 
 
-# =========================
-# 🤖 PROMPT BUILDER
-# =========================
-def build_gemini_prompt(question):
-    template = """
-Jawablah pertanyaan berikut HANYA berdasarkan pada informasi yang termuat dalam regulasi di bawah ini. 
-JANGAN gunakan pengetahuan umum atau sumber informasi eksternal lainnya. 
-Jika jawaban untuk pertanyaan tersebut tidak ditemukan secara eksplisit dalam daftar regulasi ini, 
-nyatakan bahwa informasi tersebut:
+# ====================================
+# 🧠 VECTOR STORE UPDATE (FAISS)
+# ====================================
+def create_or_update_vector_store(chunks):
+    embeddings = OllamaEmbeddings(model="llama3.2")
+
+    try:
+        if os.path.exists("faiss_index"):
+            db = FAISS.load_local(
+                "faiss_index",
+                embeddings,
+                allow_dangerous_deserialization=True
+            )
+            db.add_texts(chunks)
+        else:
+            db = FAISS.from_texts(chunks, embedding=embeddings)
+
+        db.save_local("faiss_index")
+        return db
+
+    except Exception as e:
+        st.error(f"❌ Gagal memperbarui FAISS index: {e}")
+
+        db = FAISS.from_texts(chunks, embedding=embeddings)
+        db.save_local("faiss_index")
+        st.warning("⚠️ FAISS index rusak dan telah dibuat ulang.")
+        return db
+
+
+
+# ====================================
+# 🧠 LOAD FAISS (CACHED)
+# ====================================
+@st.cache_resource(show_spinner=False)
+def load_vector_store():
+    embeddings = OllamaEmbeddings(model="llama3.2")
+
+    try:
+        return FAISS.load_local(
+            "faiss_index",
+            embeddings,
+            allow_dangerous_deserialization=True
+        )
+    except:
+        # recovery
+        return FAISS.from_texts([""], embedding=embeddings)
+
+
+
+# ====================================
+# 🤖 GEMINI PROMPT (RAG)
+# ====================================
+def build_gemini_prompt(question, context):
+    template = f"""
+Jawablah pertanyaan berikut HANYA berdasarkan konteks regulasi di bawah ini.
+JANGAN gunakan pengetahuan umum atau sumber eksternal lainnya.
+Jika jawaban tidak ditemukan secara eksplisit dalam konteks,
+jawab dengan:
 "Tidak tersedia atau tidak diatur dalam daftar regulasi yang ditentukan."
 
-Daftar Regulasi:
-1. UU No 3 Tahun 2024
-2. UU No 6 Tahun 2014
-3. PP No 11 Tahun 2019
-4. PP Nomor 8 Tahun 2016
-5. Peraturan Presiden Nomor 46 Tahun 2025
-6. Peraturan Presiden Nomor 12 Tahun 2021
-7. Peraturan Presiden Nomor 16 Tahun 2018
-8. Permendagri No 111 Tahun 2014
-9. Permendagri No 112 Tahun 2014
-10. Permendagri No 20 Tahun 2018
-11. Permendagri No 114 Tahun 2014
-12. Permendesa No. 2 Tahun 2024
-13. Peraturan Lembaga Nomor 2 Tahun 2025
-14. Peraturan Lembaga Nomor 12 Tahun 2019
-15. Keputusan Deputi I Nomor 1 Tahun 2025
-16. Keputusan Deputi I Nomor 2 Tahun 2024
-17. Surat Edaran Kepala LKPP Nomor 1 Tahun 2025
-18. Perbup No 44 Tahun 2020
+Konteks (hasil pencarian regulasi terkait):
+{context}
 
 Pertanyaan:
 {question}
 
 Jawaban:
 """
-    return template.format(question=question)
+    return template
 
 
 
-# =========================
-# 🤖 GEMINI REST CLIENT
-# =========================
-def call_gemini_rest(prompt):
-    """
-    Memanggil Gemini via REST API.
-    Sama seperti AppScript Anda.
-    """
+# ====================================
+# 🤖 RAG + GEMINI ANSWER
+# ====================================
+def user_input(user_question):
+    # 1. Load FAISS
+    db = load_vector_store()
+
+    # 2. Ambil chunk paling relevan
+    docs = db.similarity_search(user_question, k=5)
+    context = "\n\n".join([d.page_content for d in docs])
+
+    # 3. Build prompt
+    prompt = build_gemini_prompt(user_question, context)
+
+    # 4. Call Gemini REST API
     url = f"{GEMINI_ENDPOINT}?key={GEMINI_API_KEY}"
-
     payload = {
         "contents": [
             {
-                "parts": [{"text": prompt}]
+                "parts": [
+                    {"text": prompt}
+                ]
             }
         ]
     }
@@ -123,30 +166,17 @@ def call_gemini_rest(prompt):
         response = requests.post(url, json=payload)
         data = response.json()
 
-        return (
-            data["candidates"][0]["content"]["parts"][0]["text"]
-        )
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        return {"output_text": text}
 
     except Exception as e:
-        return f"❌ Error from Gemini API: {e}"
+        return {"output_text": f"❌ Error from Gemini API: {e}"}
 
 
 
-# =========================
+# ====================================
 # 💬 CHAT HANDLING
-# =========================
-def user_input(user_question):
-    """
-    Final QA flow:
-    - Build prompt
-    - Kirim ke Gemini REST
-    - Return text
-    """
-    prompt = build_gemini_prompt(user_question)
-    result = call_gemini_rest(prompt)
-    return {"output_text": result}
-
-
+# ====================================
 def clear_chat_history():
     st.session_state.messages = [
         {"role": "assistant", "content": "Tanyakan apapun terkait regulasi pengadaan barang/jasa."}
@@ -154,9 +184,9 @@ def clear_chat_history():
 
 
 
-# =========================
+# ====================================
 # 🚀 MAIN STREAMLIT APP
-# =========================
+# ====================================
 def main():
     st.set_page_config(page_title="ReguBot | Regulasi ChatBot", page_icon="🤖")
     st.title("Selamat datang di ReguBot!")
@@ -175,10 +205,10 @@ def main():
                     raw_text = get_pdf_text(pdf_docs)
                     chunks = get_text_chunks(raw_text)
 
-                    # Tidak mengubah fitur upload — tetap sama
+                    create_or_update_vector_store(chunks)
                     save_state(uploaded_names)
 
-                    st.success("✅ Dokumen berhasil diproses.")
+                    st.success("✅ Dokumen berhasil diproses dan ditambahkan.")
             else:
                 st.warning("⚠️ Tolong unggah minimal satu dokumen.")
 
@@ -198,7 +228,7 @@ def main():
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # User typing area
+    # User question
     if prompt := st.chat_input("Ketik di sini..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
