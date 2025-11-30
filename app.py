@@ -66,10 +66,19 @@ def get_text_chunks(text):
 # =========================
 def build_gemini_prompt(question):
     template = """
-Jawablah pertanyaan berikut berdasarkan informasi yang termuat dalam regulasi di bawah ini.
-Jika jawaban dapat ditemukan dalam regulasi, gunakan informasi dari regulasi tersebut.
-Jika jawaban tidak ditemukan secara eksplisit dalam regulasi, Anda boleh menggunakan sumber informasi eksternal.
-WAJIB sertakan referensi atau kutipan dari regulasi yang relevan.
+Anda adalah asisten yang sangat teliti dalam menjawab pertanyaan terkait regulasi pengadaan barang/jasa.
+Ikuti aturan berikut secara ketat:
+
+1. Gunakan informasi dari regulasi terlebih dahulu.
+   Jika jawaban untuk pertanyaan dapat ditemukan secara jelas: implisit atau eksplisit dalam regulasi, jawablah hanya berdasarkan regulasi tersebut.
+
+2. Jika regulasi tidak cukup, Anda boleh menggunakan sumber informasi eksternal untuk menjawab pertanyaan, tetapi WAJIB mencantumkan bahwa sumber utama adalah regulasi, dan sertakan referensi/cuplikan regulasi terkait.
+
+3. Jika pertanyaan tidak ada kaitannya dengan regulasi, jawab dengan informasi yang relevan dari sumber eksternal, tetap sertakan referensi regulasi pada bagian yang mendukung.
+
+4. Jangan membuat asumsi atau menjawab di luar konteks regulasi, kecuali memang diminta oleh poin 2 dan 3.
+
+---
 
 Daftar Regulasi:
 1. UU No 3 Tahun 2024
@@ -95,6 +104,16 @@ Pertanyaan:
 {question}
 
 Jawaban:
+- Berikan jawaban secara jelas dan lengkap.
+- Sertakan bagian “Sumber Regulasi” di akhir jawaban.
+
+Contoh format jawaban:
+
+Jawaban:
+[Isi jawaban yang relevan]
+
+Sumber Regulasi:
+[Cuplikan atau referensi regulasi yang relevan]
 """
     return template.format(question=question)
 
