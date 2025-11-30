@@ -3,27 +3,22 @@ import json
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
 from dotenv import load_dotenv
-import requests
 
 load_dotenv()
 
+# =========================
+# 🔵 GOOGLE GEMINI API
+# =========================
+import google.generativeai as genai
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-# ====================================
-# 🔵 GOOGLE GEMINI (REST API CONFIG)
-# ====================================
-GEMINI_ENDPOINT = (
-    "https://generativelanguage.googleapis.com/v1beta/models/"
-    "gemini-2.5-flash:generateContent"
-)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 
-# ====================================
+# =========================
 # 📁 FILE STATE MANAGEMENT
-# ====================================
+# =========================
 STATE_FILE = "app_state.json"
 
 def save_state(new_file_names):
@@ -34,7 +29,6 @@ def save_state(new_file_names):
     with open(STATE_FILE, "w") as f:
         json.dump({"processed_files": updated}, f)
 
-
 def load_state():
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r") as f:
@@ -42,9 +36,9 @@ def load_state():
     return {"processed_files": []}
 
 
-# ====================================
+# =========================
 # 📄 PDF PROCESSING
-# ====================================
+# =========================
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -60,11 +54,13 @@ def get_text_chunks(text):
     return splitter.split_text(text)
 
 
-# ====================================
-# 🧠 VECTOR STORE UPDATE (FAISS)
-# ====================================
+# =========================
+# 🧠 VECTOR STORE UPDATE (Gemini Embeddings)
+# =========================
 def create_or_update_vector_store(chunks):
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+
+    from langchain.vectorstores import FAISS
 
     try:
         if os.path.exists("faiss_index"):
@@ -85,16 +81,18 @@ def create_or_update_vector_store(chunks):
 
         db = FAISS.from_texts(chunks, embedding=embeddings)
         db.save_local("faiss_index")
+
         st.warning("⚠️ FAISS index rusak dan telah dibuat ulang.")
         return db
 
 
-# ====================================
-# 🧠 LOAD FAISS (CACHED)
-# ====================================
+# =========================
+# 🧠 VECTOR STORE LOAD (Gemini)
+# =========================
 @st.cache_resource(show_spinner=False)
 def load_vector_store():
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+    from langchain.vectorstores import FAISS
 
     try:
         return FAISS.load_local(
@@ -106,18 +104,17 @@ def load_vector_store():
         return FAISS.from_texts([""], embedding=embeddings)
 
 
-# ====================================
+# =========================
 # 🤖 PROMPT BUILDER
-# ====================================
+# =========================
 def build_gemini_prompt(question, context):
-    template = f"""
-Jawablah pertanyaan berikut HANYA berdasarkan konteks regulasi di bawah ini.
-JANGAN gunakan pengetahuan umum atau sumber eksternal lainnya.
-Jika jawaban tidak ditemukan secara eksplisit dalam konteks,
-jawab dengan:
+    template = """
+Jawablah pertanyaan berikut HANYA berdasarkan pada informasi yang termuat dalam regulasi di bawah ini.
+JANGAN gunakan pengetahuan umum atau sumber informasi eksternal lainnya.
+Jika jawaban tidak ditemukan dalam daftar regulasi ini, jawab:
 "Tidak tersedia atau tidak diatur dalam daftar regulasi yang ditentukan."
 
-Konteks regulasi relevan:
+Daftar Regulasi (cuplikan hasil pencarian):
 {context}
 
 Pertanyaan:
@@ -125,59 +122,51 @@ Pertanyaan:
 
 Jawaban:
 """
-    return template
+    return template.format(question=question, context=context)
 
 
-# ====================================
-# 🤖 RAG + GEMINI QA
-# ====================================
+# =========================
+# 🤖 QA via Gemini (RAG)
+# =========================
 def user_input(user_question):
     db = load_vector_store()
-    docs = db.similarity_search(user_question, k=5)
+
+    # 1) Ambil dokumen relevan
+    docs = db.similarity_search(user_question, k=4)
     context = "\n\n".join([d.page_content for d in docs])
 
+    # 2) Buat prompt
     prompt = build_gemini_prompt(user_question, context)
 
-    url = f"{GEMINI_ENDPOINT}?key={GEMINI_API_KEY}"
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": prompt}
-                ]
-            }
-        ]
-    }
+    # 3) Kirim ke Gemini
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
     try:
-        response = requests.post(url, json=payload)
-        data = response.json()
-
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-        return {"output_text": text}
-
+        response = model.generate_content(prompt)
+        return {"output_text": response.text}
     except Exception as e:
         return {"output_text": f"❌ Error from Gemini API: {e}"}
 
 
-# ====================================
+# =========================
 # 💬 CHAT HANDLING
-# ====================================
+# =========================
 def clear_chat_history():
     st.session_state.messages = [
         {"role": "assistant", "content": "Tanyakan apapun terkait regulasi pengadaan barang/jasa."}
     ]
 
 
-# ====================================
+# =========================
 # 🚀 MAIN STREAMLIT APP
-# ====================================
+# =========================
 def main():
     st.set_page_config(page_title="ReguBot | Regulasi ChatBot", page_icon="🤖")
     st.title("Selamat datang di ReguBot!")
 
     state = load_state()
 
+    # Sidebar (TIDAK DIUBAH)
     with st.sidebar:
         st.header("📂 Unggah & Proses Dokumen")
         pdf_docs = st.file_uploader("Unggah File PDF", accept_multiple_files=True, type=["pdf"])
@@ -192,7 +181,7 @@ def main():
                     create_or_update_vector_store(chunks)
                     save_state(uploaded_names)
 
-                    st.success("✅ Dokumen berhasil diproses dan ditambahkan.")
+                    st.success("✅ Dokumen berhasil diproses.")
             else:
                 st.warning("⚠️ Tolong unggah minimal satu dokumen.")
 
@@ -203,13 +192,16 @@ def main():
             for f in state["processed_files"]:
                 st.write(f"• " + f)
 
+    # Init chat history
     if "messages" not in st.session_state:
         clear_chat_history()
 
+    # Render chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+    # User typing area
     if prompt := st.chat_input("Ketik di sini..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
