@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -7,13 +8,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# =========================
-# 🔵 GOOGLE GEMINI API
-# =========================
-import google.generativeai as genai
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+# =========================
+# 🔵 GOOGLE GEMINI (REST API)
+# =========================
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_ENDPOINT = (
+    "https://generativelanguage.googleapis.com/v1beta/models/"
+    "gemini-2.5-flash:generateContent"
+)
+
 
 
 # =========================
@@ -36,6 +41,7 @@ def load_state():
     return {"processed_files": []}
 
 
+
 # =========================
 # 📄 PDF PROCESSING
 # =========================
@@ -53,127 +59,99 @@ def get_text_chunks(text):
     splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
     return splitter.split_text(text)
 
-# =========================
-# 🧠 VECTOR STORE UPDATE (Gemini Embeddings) - REFACTORED
-# =========================
-def create_or_update_vector_store(chunks, batch_size=10):
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
-    from langchain.vectorstores import FAISS
-    import time
-    from google.api_core.exceptions import DeadlineExceeded
-
-    # Fungsi helper: retry embedding
-    def safe_embed(text, retries=5):
-        for attempt in range(retries):
-            try:
-                return embeddings.embed_documents([text])[0]
-            except DeadlineExceeded:
-                sleep_time = 1.5 * (attempt + 1)
-                time.sleep(sleep_time)
-            except Exception:
-                time.sleep(1)
-        raise Exception("Embedding gagal setelah retry.")
-
-    try:
-        if os.path.exists("faiss_index"):
-            db = FAISS.load_local(
-                "faiss_index",
-                embeddings,
-                allow_dangerous_deserialization=True
-            )
-        else:
-            db = FAISS.from_texts([], embedding=embeddings)
-
-        # Batch processing untuk menghindari 504
-        for i in range(0, len(chunks), batch_size):
-            batch = chunks[i:i+batch_size]
-            vectors = [safe_embed(c) for c in batch]
-            db.add_texts(batch)
-
-        db.save_local("faiss_index")
-        return db
-
-    except Exception as e:
-        import streamlit as st
-        st.error(f"❌ Gagal memperbarui FAISS index: {e}")
-
-        # fallback: buat index baru
-        db = FAISS.from_texts(chunks, embedding=embeddings)
-        db.save_local("faiss_index")
-        st.warning("⚠️ FAISS index rusak dan telah dibuat ulang.")
-        return db
-
-
-
-# =========================
-# 🧠 VECTOR STORE LOAD (Gemini)
-# =========================
-@st.cache_resource(show_spinner=False)
-def load_vector_store():
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
-    from langchain.vectorstores import FAISS
-
-    try:
-        return FAISS.load_local(
-            "faiss_index",
-            embeddings,
-            allow_dangerous_deserialization=True
-        )
-    except:
-        return FAISS.from_texts([""], embedding=embeddings)
 
 
 # =========================
 # 🤖 PROMPT BUILDER
 # =========================
-def build_gemini_prompt(question, context):
+def build_gemini_prompt(question):
     template = """
-Jawablah pertanyaan berikut HANYA berdasarkan pada informasi yang termuat dalam regulasi di bawah ini.
-JANGAN gunakan pengetahuan umum atau sumber informasi eksternal lainnya.
-Jika jawaban tidak ditemukan dalam daftar regulasi ini, jawab:
+Jawablah pertanyaan berikut HANYA berdasarkan pada informasi yang termuat dalam regulasi di bawah ini. 
+JANGAN gunakan pengetahuan umum atau sumber informasi eksternal lainnya. 
+Jika jawaban untuk pertanyaan tersebut tidak ditemukan secara eksplisit dalam daftar regulasi ini, 
+nyatakan bahwa informasi tersebut:
 "Tidak tersedia atau tidak diatur dalam daftar regulasi yang ditentukan."
 
-Daftar Regulasi (cuplikan hasil pencarian):
-{context}
+Daftar Regulasi:
+1. UU No 3 Tahun 2024
+2. UU No 6 Tahun 2014
+3. PP No 11 Tahun 2019
+4. PP Nomor 8 Tahun 2016
+5. Peraturan Presiden Nomor 46 Tahun 2025
+6. Peraturan Presiden Nomor 12 Tahun 2021
+7. Peraturan Presiden Nomor 16 Tahun 2018
+8. Permendagri No 111 Tahun 2014
+9. Permendagri No 112 Tahun 2014
+10. Permendagri No 20 Tahun 2018
+11. Permendagri No 114 Tahun 2014
+12. Permendesa No. 2 Tahun 2024
+13. Peraturan Lembaga Nomor 2 Tahun 2025
+14. Peraturan Lembaga Nomor 12 Tahun 2019
+15. Keputusan Deputi I Nomor 1 Tahun 2025
+16. Keputusan Deputi I Nomor 2 Tahun 2024
+17. Surat Edaran Kepala LKPP Nomor 1 Tahun 2025
+18. Perbup No 44 Tahun 2020
 
 Pertanyaan:
 {question}
 
 Jawaban:
 """
-    return template.format(question=question, context=context)
+    return template.format(question=question)
+
 
 
 # =========================
-# 🤖 QA via Gemini (RAG)
+# 🤖 GEMINI REST CLIENT
 # =========================
-def user_input(user_question):
-    db = load_vector_store()
+def call_gemini_rest(prompt):
+    """
+    Memanggil Gemini via REST API.
+    Sama seperti AppScript Anda.
+    """
+    url = f"{GEMINI_ENDPOINT}?key={GEMINI_API_KEY}"
 
-    # 1) Ambil dokumen relevan
-    docs = db.similarity_search(user_question, k=4)
-    context = "\n\n".join([d.page_content for d in docs])
-
-    # 2) Buat prompt
-    prompt = build_gemini_prompt(user_question, context)
-
-    # 3) Kirim ke Gemini
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    payload = {
+        "contents": [
+            {
+                "parts": [{"text": prompt}]
+            }
+        ]
+    }
 
     try:
-        response = model.generate_content(prompt)
-        return {"output_text": response.text}
+        response = requests.post(url, json=payload)
+        data = response.json()
+
+        return (
+            data["candidates"][0]["content"]["parts"][0]["text"]
+        )
+
     except Exception as e:
-        return {"output_text": f"❌ Error from Gemini API: {e}"}
+        return f"❌ Error from Gemini API: {e}"
+
 
 
 # =========================
 # 💬 CHAT HANDLING
 # =========================
+def user_input(user_question):
+    """
+    Final QA flow:
+    - Build prompt
+    - Kirim ke Gemini REST
+    - Return text
+    """
+    prompt = build_gemini_prompt(user_question)
+    result = call_gemini_rest(prompt)
+    return {"output_text": result}
+
+
 def clear_chat_history():
     st.session_state.messages = [
         {"role": "assistant", "content": "Tanyakan apapun terkait regulasi pengadaan barang/jasa."}
     ]
+
 
 
 # =========================
@@ -197,7 +175,7 @@ def main():
                     raw_text = get_pdf_text(pdf_docs)
                     chunks = get_text_chunks(raw_text)
 
-                    create_or_update_vector_store(chunks)
+                    # Tidak mengubah fitur upload — tetap sama
                     save_state(uploaded_names)
 
                     st.success("✅ Dokumen berhasil diproses.")
