@@ -53,14 +53,26 @@ def get_text_chunks(text):
     splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
     return splitter.split_text(text)
 
-
 # =========================
-# 🧠 VECTOR STORE UPDATE (Gemini Embeddings)
+# 🧠 VECTOR STORE UPDATE (Gemini Embeddings) - REFACTORED
 # =========================
-def create_or_update_vector_store(chunks):
+def create_or_update_vector_store(chunks, batch_size=10):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
-
     from langchain.vectorstores import FAISS
+    import time
+    from google.api_core.exceptions import DeadlineExceeded
+
+    # Fungsi helper: retry embedding
+    def safe_embed(text, retries=5):
+        for attempt in range(retries):
+            try:
+                return embeddings.embed_documents([text])[0]
+            except DeadlineExceeded:
+                sleep_time = 1.5 * (attempt + 1)
+                time.sleep(sleep_time)
+            except Exception:
+                time.sleep(1)
+        raise Exception("Embedding gagal setelah retry.")
 
     try:
         if os.path.exists("faiss_index"):
@@ -69,21 +81,28 @@ def create_or_update_vector_store(chunks):
                 embeddings,
                 allow_dangerous_deserialization=True
             )
-            db.add_texts(chunks)
         else:
-            db = FAISS.from_texts(chunks, embedding=embeddings)
+            db = FAISS.from_texts([], embedding=embeddings)
+
+        # Batch processing untuk menghindari 504
+        for i in range(0, len(chunks), batch_size):
+            batch = chunks[i:i+batch_size]
+            vectors = [safe_embed(c) for c in batch]
+            db.add_texts(batch)
 
         db.save_local("faiss_index")
         return db
 
     except Exception as e:
+        import streamlit as st
         st.error(f"❌ Gagal memperbarui FAISS index: {e}")
 
+        # fallback: buat index baru
         db = FAISS.from_texts(chunks, embedding=embeddings)
         db.save_local("faiss_index")
-
         st.warning("⚠️ FAISS index rusak dan telah dibuat ulang.")
         return db
+
 
 
 # =========================
