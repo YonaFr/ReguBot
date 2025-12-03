@@ -285,7 +285,7 @@ def main():
         st.markdown(
             """
             <div style="text-align:center;">
-                <img src="https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.jpeg" width="140">
+                <img src="https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.png" width="140">
             </div>
             """,
             unsafe_allow_html=True
