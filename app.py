@@ -320,7 +320,7 @@ def main():
                 <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
                     CC BY-NC-SA 4.0 License
                 </a><br>
-                2017 - 2025. Yona Friantina.<br>
+                2025. Yona Friantina.<br>
                 Some rights reserved.<br>
                 <span style="font-size:11px;">Build with Streamlit</span>
             </div>
