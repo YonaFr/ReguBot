@@ -97,7 +97,7 @@ Jika ingin menambah fitur, regulasi, atau memperbaiki bug, silakan buat **pull r
 ## Lisensi
 
 * [Creative Commons BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-* 2025. Yona Friantina. Some rights reserved.
+* © 2025. Yona Friantina. Some rights reserved.
 
 ---
 
@@ -110,6 +110,3 @@ Jika ingin menambah fitur, regulasi, atau memperbaiki bug, silakan buat **pull r
 * Google Gemini API
 * dotenv untuk manajemen environment variables
 
----
-
-Kalau mau, saya bisa buatkan juga **`requirements.txt`** lengkap yang pas untuk proyek ini sehingga tinggal install saja. Apakah mau saya buatkan?
