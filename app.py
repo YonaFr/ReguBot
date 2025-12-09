@@ -3,7 +3,7 @@ import json
 import requests
 import streamlit as st
 from PyPDF2 import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
 import re   # >>> ADDED
 
