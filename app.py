@@ -271,7 +271,7 @@ def clear_chat_history():
 # 🚀 MAIN STREAMLIT APP
 # =========================
 def main():
-    st.set_page_config(page_title="ReguBot | Regulasi ChatBot", page_icon="🤖")
+    st.set_page_config(page_title="ReguBot | Regulasi ChatBot", page_icon="https://raw.githubusercontent.com/YonaFr/YonaFr.GitHub.IO/main/PBJ.ico")
     st.title("Selamat datang di ReguBot!")
 
     state = load_state()
