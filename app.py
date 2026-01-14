@@ -7,16 +7,20 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
 import re
 
+# =====================================================
+# 🔧 INIT
+# =====================================================
 load_dotenv()
+st.set_page_config(page_title="ReguBot | Regulasi PBJ", page_icon="📘")
 
-# =========================
-# ⚠️ HARD-CODE EXCLUDED REGULATIONS
-# =========================
+# =====================================================
+# ⚠️ REGULASI DIKECUALIKAN
+# =====================================================
 EXCLUDED_REGULATIONS = []
 
-# =========================
-# 📘 STRUKTUR PASAL
-# =========================
+# =====================================================
+# 📘 DAFTAR REGULASI & STRUKTUR PASAL
+# =====================================================
 REGULATION_STRUCTURE = {
     "UU No 3 Tahun 2024": list(range(1, 133)),
     "UU No 6 Tahun 2014": list(range(1, 133)),
@@ -38,62 +42,70 @@ REGULATION_STRUCTURE = {
     "Surat Edaran Kepala LKPP Nomor 1 Tahun 2025": []
 }
 
-# =========================
-# 🔍 DETEKSI REGULASI DI PERTANYAAN
-# =========================
-def detect_related_regulation(question: str):
+# =====================================================
+# 🧠 DETEKSI APAKAH PERTANYAAN REGULASI
+# =====================================================
+def is_regulation_question(question: str) -> bool:
     q = question.lower()
-    return [r for r in REGULATION_STRUCTURE if r.lower() in q]
 
-# =========================
-# 🤖 GEMINI SETUP
-# =========================
+    KEYWORDS = [
+        "pasal", "ayat", "ketentuan", "diatur", "berdasarkan",
+        "menurut", "regulasi", "peraturan", "undang-undang",
+        "pengadaan", "pbj", "ppk", "pokja", "ulp", "lpse",
+        "tender", "lelang", "kontrak", "spse", "e-purchasing",
+        "desa", "kepala desa", "apbdes", "dana desa",
+        "sanksi", "wewenang", "tugas", "larangan"
+    ]
+
+    return any(k in q for k in KEYWORDS)
+
+# =====================================================
+# 🤖 GEMINI CONFIG
+# =====================================================
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_ENDPOINT = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "gemini-3-flash-preview:generateContent"
 )
 
-def build_gemini_prompt(question):
+def build_prompt(question: str) -> str:
     return f"""
 Anda adalah asisten ahli regulasi pengadaan barang/jasa.
 
-Aturan:
-- Jawab berdasarkan regulasi jika tersedia.
-- Jangan mengarang pasal.
-- Jika pasal tidak pasti, tulis tanpa pasal.
+ATURAN WAJIB:
+- Utamakan regulasi jika relevan
+- Jangan mengarang pasal
+- Jika tidak yakin pasal, tulis tanpa pasal
+- Format jawaban WAJIB dipatuhi
 
-Format WAJIB:
+FORMAT JAWABAN:
 
 Jawaban:
-...
+[Tuliskan jawaban di sini]
 
 Sumber Regulasi:
-...
+[Sebutkan regulasi jika ada]
 
-Pertanyaan:
+PERTANYAAN:
 {question}
 """
 
-def call_gemini(prompt):
+def call_gemini(prompt: str) -> str:
     url = f"{GEMINI_ENDPOINT}?key={GEMINI_API_KEY}"
-    payload = {
-        "contents": [{"parts": [{"text": prompt}]}]
-    }
-    r = requests.post(url, json=payload)
-    return r.json()["candidates"][0]["content"]["parts"][0]["text"]
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    response = requests.post(url, json=payload, timeout=30)
+    return response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
-# =========================
-# 💬 STREAMLIT APP
-# =========================
+# =====================================================
+# 🚀 STREAMLIT APP
+# =====================================================
 def main():
-    st.set_page_config(page_title="ReguBot")
-    st.title("📘 ReguBot")
+    st.title("📘 ReguBot – Asisten Regulasi PBJ")
 
-    # --- STATE ---
+    # ---------- SESSION STATE ----------
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "Silakan ajukan pertanyaan regulasi."}
+            {"role": "assistant", "content": "Silakan ajukan pertanyaan terkait regulasi PBJ."}
         ]
 
     if "pending_question" not in st.session_state:
@@ -102,24 +114,22 @@ def main():
     if "awaiting_confirmation" not in st.session_state:
         st.session_state.awaiting_confirmation = False
 
-    # --- CHAT HISTORY ---
+    # ---------- CHAT HISTORY ----------
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # --- INPUT ---
-    if prompt := st.chat_input("Ketik pertanyaan..."):
+    # ---------- CHAT INPUT ----------
+    if prompt := st.chat_input("Ketik pertanyaan Anda..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        detected = detect_related_regulation(prompt)
-
-        if detected:
+        if is_regulation_question(prompt):
             with st.chat_message("assistant"):
-                with st.spinner("🤔 Thinking..."):
-                    answer = call_gemini(build_gemini_prompt(prompt))
+                with st.spinner("🤔 Memproses..."):
+                    answer = call_gemini(build_prompt(prompt))
                     st.markdown(answer)
                     st.session_state.messages.append(
                         {"role": "assistant", "content": answer}
@@ -128,7 +138,7 @@ def main():
             st.session_state.pending_question = prompt
             st.session_state.awaiting_confirmation = True
 
-    # --- CONFIRMATION ---
+    # ---------- CONFIRMATION ----------
     if st.session_state.awaiting_confirmation:
         st.warning(
             "⚠️ Regulasi tidak ditemukan dalam daftar. "
@@ -138,11 +148,11 @@ def main():
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("✅ Ya"):
+            if st.button("✅ Ya, lanjutkan"):
                 q = st.session_state.pending_question
                 with st.chat_message("assistant"):
-                    with st.spinner("🤔 Thinking..."):
-                        answer = call_gemini(build_gemini_prompt(q))
+                    with st.spinner("🤔 Memproses..."):
+                        answer = call_gemini(build_prompt(q))
                         st.markdown(answer)
                         st.session_state.messages.append(
                             {"role": "assistant", "content": answer}
@@ -156,5 +166,8 @@ def main():
                 st.session_state.awaiting_confirmation = False
                 st.session_state.pending_question = None
 
+# =====================================================
+# ▶️ RUN
+# =====================================================
 if __name__ == "__main__":
     main()
