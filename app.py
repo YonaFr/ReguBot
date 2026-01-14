@@ -297,7 +297,7 @@ def main():
             st.markdown(message["content"])
 
     if prompt := st.chat_input("Ketik di sini..."):
-        st.session_state.messages.append({"role": "user", "content": prompt"})
+        st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
         with st.chat_message("assistant"):
