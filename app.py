@@ -41,10 +41,11 @@ REGULATION_STRUCTURE = {
 }
 
 # =========================
-# 🔍 VALIDASI CITATION
+# 🔍 VALIDASI CITATION (PERBAIKAN)
 # =========================
 def validate_citation(response_text):   
-    pattern = r"(?P<reg>[^\d,]+?),?\s*Pasal\s*(?P<pasal>\d+)"
+    # Regex yang lebih ketat untuk hanya menangkap "Nama Regulasi, Pasal X"
+    pattern = r"(?P<reg>(?:UU|PP|Permendagri|Permendesa|Peraturan Presiden|Peraturan Lembaga|Keputusan Deputi I|Perbup|Surat Edaran Kepala LKPP)[^,]*),\s*Pasal\s*(?P<pasal>\d+)"
 
     def replacer(match):
         reg = match.group("reg").strip()
@@ -55,7 +56,7 @@ def validate_citation(response_text):
         if reg not in REGULATION_STRUCTURE:
             return f"{reg} (pasal tidak dapat diverifikasi)"
         valid_list = REGULATION_STRUCTURE[reg]
-        if not valid_list:
+        if not valid_list:  # SE tanpa pasal
             return f"{reg}"
         if pasal not in valid_list:
             return f"{reg} (pasal tidak dapat diverifikasi)"
@@ -65,7 +66,7 @@ def validate_citation(response_text):
     for ex in EXCLUDED_REGULATIONS:
         cleaned = cleaned.replace(ex, f"{ex} (dikecualikan dari penggunaan)")
     return cleaned
-
+    
 # =========================
 # 🔵 GOOGLE GEMINI (REST API)
 # =========================
@@ -165,7 +166,7 @@ def call_gemini_rest(prompt):
         return f"❌ Error from Gemini API: {e}"
 
 # =========================
-# 💬 CHAT HANDLING SESUAI PERMINTAAN
+# 💬 CHAT HANDLING SESUAI PERMINTAAN (PERBAIKAN)
 # =========================
 def user_input(user_question):
     state = load_state()
@@ -175,17 +176,18 @@ def user_input(user_question):
     pbj_keywords = ["pengadaan", "barang", "jasa", "lelang", "tender", "kontrak"]
     is_pbj = any(word.lower() in user_question.lower() for word in pbj_keywords)
 
-    # 2️⃣ Cek apakah regulasi sudah diupload
-    matched_regulations = [
-        r for r in REGULATION_STRUCTURE if any(r.split()[-1] in f for f in uploaded_files)
-    ]
+    # 2️⃣ Cek regulasi yang benar-benar diupload
+    uploaded_regulations = [r for r in REGULATION_STRUCTURE if r in uploaded_files]
 
-    if matched_regulations:
-        # Regulasi ada di upload
+    if uploaded_regulations:
+        # Regulasi ada di upload → panggil Gemini
         prompt = build_gemini_prompt(user_question)
         response = call_gemini_rest(prompt)
         validated = validate_citation(response)
-        return {"output_text": validated, "note": f"Sumber regulasi: {', '.join(matched_regulations)}"}
+        return {
+            "output_text": validated,
+            "note": f"Sumber regulasi: {', '.join(uploaded_regulations)}"
+        }
 
     elif is_pbj:
         # Masih konteks PBJ, regulasi tidak ada
@@ -211,11 +213,6 @@ def user_input(user_question):
     else:
         # Pertanyaan tidak sesuai PBJ
         return {"output_text": "Pertanyaan Anda tidak sesuai konteks pengadaan barang/jasa.", "note": ""}
-
-def clear_chat_history():
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Tanyakan apapun terkait regulasi pengadaan barang/jasa."}
-    ]
 
 # =========================
 # 🚀 MAIN STREAMLIT APP
