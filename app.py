@@ -95,7 +95,7 @@ def validate_citation(response_text):
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_ENDPOINT = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
-    "gemini-2.5-flash:generateContent"
+    "gemini-3-flash-preview:generateContent"
 )
 
 
