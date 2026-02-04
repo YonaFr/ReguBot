@@ -308,7 +308,7 @@ class ResponseHandler:
         
         return ResponseData(
             output_text=validated,
-            note=f"✅ Sumber: {', '.join(uploaded_regs)}",
+            note="",
             source_type="regulation"
         )
     
