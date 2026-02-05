@@ -528,11 +528,6 @@ class FluentUI:
             """,
             unsafe_allow_html=True
         )
-        st.markdown(
-            "<div class='footer'>© 2025 ReguBot • Fluent Government UI • Streamlit + Gemini</div>",
-            unsafe_allow_html=True
-        )
-
 
 # =========================
 # 🚀 MAIN APPLICATION
