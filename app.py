@@ -72,30 +72,32 @@ class Config:
         "hps", "aanwijzing", "sanggah", "pascakualifikasi", "prakualifikasi"
     ]
     
-    # Google Material Design Colors
-    MATERIAL_COLORS = {
-        "primary": "#1976D2",
-        "primary_dark": "#1565C0",
-        "primary_light": "#BBDEFB",
-        "secondary": "#FF6F00",
-        "secondary_dark": "#E65100",
-        "secondary_light": "#FFE0B2",
-        "accent": "#00BCD4",
-        "success": "#4CAF50",
-        "warning": "#FF9800",
-        "error": "#F44336",
-        "info": "#2196F3",
-        "background": "#FAFAFA",
+    # Microsoft Fluent Design Colors (Enhanced)
+    FLUENT_COLORS = {
+        "primary": "#0078D4",
+        "primary_hover": "#106EBE",
+        "primary_dark": "#005A9E",
+        "secondary": "#8764B8",
+        "accent": "#0099BC",
+        "success": "#107C10",
+        "warning": "#FF8C00",
+        "error": "#E81123",
+        "info": "#0078D4",
+        "background": "#F3F2F1",
+        "background_gradient": "linear-gradient(135deg, #F3F2F1 0%, #E1DFDD 100%)",
         "surface": "#FFFFFF",
-        "surface_variant": "#F5F5F5",
-        "text_primary": "#212121",
-        "text_secondary": "#757575",
-        "text_hint": "#9E9E9E",
-        "text_disabled": "#BDBDBD",
-        "divider": "#E0E0E0",
-        "border": "#BDBDBD",
-        "overlay": "rgba(0, 0, 0, 0.54)",
-        "shadow": "rgba(0, 0, 0, 0.2)"
+        "surface_alt": "#FAF9F8",
+        "text_primary": "#323130",
+        "text_secondary": "#605E5C",
+        "text_tertiary": "#8A8886",
+        "text_disabled": "#A19F9D",
+        "border": "#EDEBE9",
+        "border_strong": "#D2D0CE",
+        "divider": "#E1DFDD",
+        "overlay": "rgba(0, 0, 0, 0.4)",
+        "shadow_light": "rgba(0, 0, 0, 0.1)",
+        "shadow_medium": "rgba(0, 0, 0, 0.15)",
+        "shadow_strong": "rgba(0, 0, 0, 0.25)"
     }
 
 # =========================
@@ -318,7 +320,7 @@ class ResponseHandler:
         
         return ResponseData(
             output_text=validated,
-            note=f"✅ Sumber: {', '.join(uploaded_regs)}",
+            note="",
             source_type="regulation"
         )
     
@@ -362,487 +364,474 @@ class ResponseHandler:
 # 🎨 UI/UX MODULE - FLUENT DESIGN
 # =========================
 
-class MaterialUI:
-    """Komponen UI dengan Google Material Design System"""
+class FluentUI:
+    """Komponen UI dengan Microsoft Fluent Design System (Enhanced & Compact)"""
     
     @staticmethod
     def inject_custom_css():
-        """Inject custom CSS untuk Google Material Design"""
+        """Inject custom CSS untuk Microsoft Fluent Design"""
         st.markdown(f"""
         <style>
-        /* Import Roboto Font Family (Material Design) */
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
-        @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+        /* Import Segoe UI Font (Fluent Design) */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
-        /* Global Styles - Material Design */
+        /* Global Styles - Fluent Design */
         * {{
-            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }}
         
-        /* Main Container */
+        /* Main Container with Fluent Acrylic Background */
         .stApp {{
-            background: {Config.MATERIAL_COLORS['background']};
+            background: {Config.FLUENT_COLORS['background_gradient']};
         }}
         
-        /* Sidebar Styling - Material */
+        /* Sidebar Styling - Fluent Acrylic */
         [data-testid="stSidebar"] {{
-            background: {Config.MATERIAL_COLORS['surface']};
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            border-right: none;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-right: 1px solid {Config.FLUENT_COLORS['border']};
+            box-shadow: 2px 0 12px {Config.FLUENT_COLORS['shadow_light']};
         }}
         
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
-            padding: 0.5rem;
+            padding: 0.25rem;
         }}
         
-        /* Typography - Material Design */
+        /* Typography - Fluent Design */
         h1, h2, h3, h4, h5, h6 {{
-            color: {Config.MATERIAL_COLORS['text_primary']};
-            font-weight: 500;
-            letter-spacing: 0.0125em;
-            margin: 0;
+            color: {Config.FLUENT_COLORS['text_primary']};
+            font-weight: 600;
+            letter-spacing: -0.01em;
         }}
         
         h1 {{
-            font-size: 2.125rem;
-            font-weight: 400;
-            letter-spacing: 0;
-            line-height: 1.235;
+            font-size: 1.75rem;
+            font-weight: 600;
+            line-height: 1.2;
             margin-bottom: 0.5rem;
         }}
         
         h2 {{
             font-size: 1.5rem;
-            font-weight: 500;
-            letter-spacing: 0.0075em;
-            line-height: 1.334;
+            font-weight: 600;
+            line-height: 1.3;
         }}
         
         h3 {{
-            font-size: 1.25rem;
-            font-weight: 500;
-            letter-spacing: 0.0075em;
-            line-height: 1.6;
+            font-size: 1.125rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
         }}
         
         p {{
-            color: {Config.MATERIAL_COLORS['text_primary']};
+            color: {Config.FLUENT_COLORS['text_primary']};
             line-height: 1.5;
-            font-size: 1rem;
-            letter-spacing: 0.03125em;
+            font-size: 0.9375rem;
         }}
         
-        /* Buttons - Material Design (Raised) */
+        /* Buttons - Fluent Design (Compact) */
         .stButton > button {{
-            background: {Config.MATERIAL_COLORS['primary']};
+            background: {Config.FLUENT_COLORS['primary']};
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 0.5rem 1rem;
-            font-weight: 500;
+            padding: 0.4rem 1rem;
+            font-weight: 600;
             font-size: 0.875rem;
-            letter-spacing: 0.0892857143em;
-            text-transform: uppercase;
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 3px 1px -2px rgba(0,0,0,0.2), 
-                        0 2px 2px 0 rgba(0,0,0,0.14), 
-                        0 1px 5px 0 rgba(0,0,0,0.12);
-            height: 36px;
-            min-width: 64px;
+            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
+            box-shadow: 0 1.6px 3.6px 0 {Config.FLUENT_COLORS['shadow_light']}, 
+                        0 0.3px 0.9px 0 {Config.FLUENT_COLORS['shadow_light']};
+            height: 32px;
+            min-width: 80px;
         }}
         
         .stButton > button:hover {{
-            background: {Config.MATERIAL_COLORS['primary_dark']};
-            box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 
-                        0 4px 5px 0 rgba(0,0,0,0.14), 
-                        0 1px 10px 0 rgba(0,0,0,0.12);
+            background: {Config.FLUENT_COLORS['primary_hover']};
+            box-shadow: 0 3.2px 7.2px 0 {Config.FLUENT_COLORS['shadow_medium']}, 
+                        0 0.6px 1.8px 0 {Config.FLUENT_COLORS['shadow_medium']};
+            transform: translateY(-1px);
         }}
         
         .stButton > button:active {{
-            box-shadow: 0 5px 5px -3px rgba(0,0,0,0.2), 
-                        0 8px 10px 1px rgba(0,0,0,0.14), 
-                        0 3px 14px 2px rgba(0,0,0,0.12);
+            transform: translateY(0);
+            box-shadow: 0 0.8px 1.8px 0 {Config.FLUENT_COLORS['shadow_light']};
         }}
         
         .stButton > button:focus {{
-            outline: none;
+            outline: 2px solid {Config.FLUENT_COLORS['primary']};
+            outline-offset: 2px;
         }}
         
-        /* File Uploader - Material */
+        /* File Uploader - Fluent Acrylic */
         [data-testid="stFileUploader"] {{
-            background: {Config.MATERIAL_COLORS['surface']};
-            border: 2px dashed {Config.MATERIAL_COLORS['border']};
-            border-radius: 4px;
-            padding: 1.5rem;
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 2px dashed {Config.FLUENT_COLORS['border']};
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
         }}
         
         [data-testid="stFileUploader"]:hover {{
-            border-color: {Config.MATERIAL_COLORS['primary']};
-            background: {Config.MATERIAL_COLORS['surface_variant']};
+            border-color: {Config.FLUENT_COLORS['primary']};
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_light']};
         }}
         
-        /* Chat Messages - Material Cards */
+        /* Chat Messages - Fluent Cards */
         .stChatMessage {{
-            background: {Config.MATERIAL_COLORS['surface']};
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
             border-radius: 8px;
-            padding: 1rem;
-            margin: 0.75rem 0;
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
-                        0 1px 1px 0 rgba(0,0,0,0.14), 
-                        0 1px 3px 0 rgba(0,0,0,0.12);
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0.75rem;
+            margin: 0.4rem 0;
+            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
+            border-left: 3px solid {Config.FLUENT_COLORS['primary']};
+            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
         }}
         
         .stChatMessage:hover {{
-            box-shadow: 0 3px 3px -2px rgba(0,0,0,0.2), 
-                        0 3px 4px 0 rgba(0,0,0,0.14), 
-                        0 1px 8px 0 rgba(0,0,0,0.12);
+            box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};
+            transform: translateX(2px);
         }}
         
-        /* Chat Input - Material */
+        /* Chat Input - Fluent Style */
         .stChatInput {{
-            border-radius: 24px;
-            border: 1px solid {Config.MATERIAL_COLORS['divider']};
-            background: {Config.MATERIAL_COLORS['surface']};
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
-                        0 1px 1px 0 rgba(0,0,0,0.14), 
-                        0 1px 3px 0 rgba(0,0,0,0.12);
+            border-radius: 20px;
+            border: 1.5px solid {Config.FLUENT_COLORS['border']};
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
+            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
         }}
         
         .stChatInput:focus-within {{
-            border-color: {Config.MATERIAL_COLORS['primary']};
-            box-shadow: 0 3px 3px -2px rgba(0,0,0,0.2), 
-                        0 3px 4px 0 rgba(0,0,0,0.14), 
-                        0 1px 8px 0 rgba(0,0,0,0.12);
+            border-color: {Config.FLUENT_COLORS['primary']};
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1),
+                        0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};
         }}
         
-        /* Input Fields - Material */
+        /* Input Fields - Fluent */
         input, textarea {{
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid {Config.MATERIAL_COLORS['divider']};
-            border-radius: 4px 4px 0 0;
-            padding: 1rem 0.75rem;
-            font-size: 1rem;
-            color: {Config.MATERIAL_COLORS['text_primary']};
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid {Config.FLUENT_COLORS['border']};
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9375rem;
+            color: {Config.FLUENT_COLORS['text_primary']};
+            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
         }}
         
         input:hover, textarea:hover {{
-            background: rgba(0, 0, 0, 0.04);
+            border-color: {Config.FLUENT_COLORS['border_strong']};
+            background: rgba(255, 255, 255, 0.95);
         }}
         
         input:focus, textarea:focus {{
             outline: none;
-            border-bottom: 2px solid {Config.MATERIAL_COLORS['primary']};
-            background: rgba(0, 0, 0, 0.04);
+            border-color: {Config.FLUENT_COLORS['primary']};
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
         }}
         
-        /* Alerts - Material Snackbar/Alert */
+        /* Alerts - Fluent Notifications */
         .stAlert {{
-            border-radius: 4px;
+            border-radius: 6px;
             border: none;
-            padding: 0.75rem 1rem;
-            box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 
-                        0 6px 10px 0 rgba(0,0,0,0.14), 
-                        0 1px 18px 0 rgba(0,0,0,0.12);
+            padding: 0.65rem 1rem;
+            box-shadow: 0 3px 8px {Config.FLUENT_COLORS['shadow_light']};
             font-size: 0.875rem;
         }}
         
         /* Success Alert */
         [data-baseweb="notification"] {{
-            background: {Config.MATERIAL_COLORS['success']};
+            background: {Config.FLUENT_COLORS['success']};
             color: white;
-            border-radius: 4px;
+            border-radius: 6px;
         }}
         
         /* Warning Alert */
         .stWarning {{
-            background: {Config.MATERIAL_COLORS['warning']};
-            color: white;
+            background: #FFF4CE;
+            border-left: 3px solid {Config.FLUENT_COLORS['warning']};
+            color: #333;
         }}
         
         /* Error Alert */
         .stError {{
-            background: {Config.MATERIAL_COLORS['error']};
-            color: white;
+            background: #FDE7E9;
+            border-left: 3px solid {Config.FLUENT_COLORS['error']};
+            color: #333;
         }}
         
         /* Info Alert */
         .stInfo {{
-            background: {Config.MATERIAL_COLORS['info']};
-            color: white;
+            background: #E7F3FF;
+            border-left: 3px solid {Config.FLUENT_COLORS['info']};
+            color: #333;
         }}
         
-        /* Material Cards */
-        .material-card {{
-            background: {Config.MATERIAL_COLORS['surface']};
-            border-radius: 4px;
-            padding: 1rem;
-            margin: 0.75rem 0;
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
-                        0 1px 1px 0 rgba(0,0,0,0.14), 
-                        0 1px 3px 0 rgba(0,0,0,0.12);
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        /* Fluent Cards */
+        .fluent-card {{
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin: 0.4rem 0;
+            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
+            border: 1px solid {Config.FLUENT_COLORS['border']};
+            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
         }}
         
-        .material-card:hover {{
-            box-shadow: 0 3px 3px -2px rgba(0,0,0,0.2), 
-                        0 3px 4px 0 rgba(0,0,0,0.14), 
-                        0 1px 8px 0 rgba(0,0,0,0.12);
+        .fluent-card:hover {{
+            box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};
             transform: translateY(-2px);
+            border-color: {Config.FLUENT_COLORS['border_strong']};
         }}
         
         /* Elevated Card */
-        .material-card-elevated {{
-            background: {Config.MATERIAL_COLORS['surface']};
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            box-shadow: 0 4px 5px -2px rgba(0,0,0,0.2), 
-                        0 7px 10px 1px rgba(0,0,0,0.14), 
-                        0 2px 16px 1px rgba(0,0,0,0.12);
+        .fluent-card-elevated {{
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(30px);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            box-shadow: 0 4px 16px {Config.FLUENT_COLORS['shadow_medium']};
+            border: 1px solid {Config.FLUENT_COLORS['border']};
         }}
         
-        /* Spinner - Material */
+        /* Spinner - Fluent */
         .stSpinner > div {{
-            border-color: {Config.MATERIAL_COLORS['primary']} transparent transparent transparent;
+            border-color: {Config.FLUENT_COLORS['primary']} transparent transparent transparent;
         }}
         
-        /* Scrollbar - Material */
+        /* Scrollbar - Fluent */
         ::-webkit-scrollbar {{
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
         }}
         
         ::-webkit-scrollbar-track {{
-            background: {Config.MATERIAL_COLORS['background']};
+            background: {Config.FLUENT_COLORS['surface_alt']};
+            border-radius: 5px;
         }}
         
         ::-webkit-scrollbar-thumb {{
-            background: {Config.MATERIAL_COLORS['text_hint']};
-            border-radius: 6px;
-            border: 3px solid {Config.MATERIAL_COLORS['background']};
+            background: {Config.FLUENT_COLORS['border_strong']};
+            border-radius: 5px;
+            border: 2px solid {Config.FLUENT_COLORS['surface_alt']};
         }}
         
         ::-webkit-scrollbar-thumb:hover {{
-            background: {Config.MATERIAL_COLORS['text_secondary']};
+            background: {Config.FLUENT_COLORS['text_tertiary']};
         }}
         
-        /* Document List - Material */
+        /* Document List - Fluent */
         .doc-item {{
-            background: {Config.MATERIAL_COLORS['surface']};
-            padding: 0.75rem 1rem;
-            margin: 0.5rem 0;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 
-                        0 1px 2px 0 rgba(0,0,0,0.06);
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 0.5rem 0.75rem;
+            margin: 0.3rem 0;
+            border-radius: 6px;
+            border-left: 3px solid {Config.FLUENT_COLORS['accent']};
+            box-shadow: 0 1px 3px {Config.FLUENT_COLORS['shadow_light']};
+            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
             font-size: 0.875rem;
-            border-left: 4px solid {Config.MATERIAL_COLORS['primary']};
         }}
         
         .doc-item:hover {{
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 
-                        0 2px 4px -1px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px {Config.FLUENT_COLORS['shadow_medium']};
             transform: translateX(4px);
+            border-left-width: 4px;
         }}
         
-        /* Material Chips */
-        .material-chip {{
+        /* Fluent Pills/Badges */
+        .fluent-badge {{
             display: inline-flex;
             align-items: center;
-            background: {Config.MATERIAL_COLORS['surface_variant']};
-            color: {Config.MATERIAL_COLORS['text_primary']};
-            padding: 0 0.75rem;
-            height: 32px;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            border-radius: 16px;
-            margin: 0.25rem;
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            background: {Config.FLUENT_COLORS['surface']};
+            color: {Config.FLUENT_COLORS['text_primary']};
+            padding: 0.25rem 0.65rem;
+            height: 24px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 12px;
+            margin: 0.2rem;
+            border: 1px solid {Config.FLUENT_COLORS['border']};
+            box-shadow: 0 1px 2px {Config.FLUENT_COLORS['shadow_light']};
         }}
         
-        .material-chip:hover {{
-            background: {Config.MATERIAL_COLORS['divider']};
-        }}
-        
-        /* Material Chip - Primary */
-        .material-chip.primary {{
-            background: {Config.MATERIAL_COLORS['primary']};
+        .fluent-badge.primary {{
+            background: {Config.FLUENT_COLORS['primary']};
             color: white;
+            border-color: {Config.FLUENT_COLORS['primary']};
         }}
         
-        /* Material Chip - Success */
-        .material-chip.success {{
-            background: {Config.MATERIAL_COLORS['success']};
+        .fluent-badge.success {{
+            background: {Config.FLUENT_COLORS['success']};
             color: white;
+            border-color: {Config.FLUENT_COLORS['success']};
         }}
         
-        /* Material Chip - Warning */
-        .material-chip.warning {{
-            background: {Config.MATERIAL_COLORS['warning']};
+        .fluent-badge.warning {{
+            background: {Config.FLUENT_COLORS['warning']};
             color: white;
+            border-color: {Config.FLUENT_COLORS['warning']};
         }}
         
-        /* Material Chip - Error */
-        .material-chip.error {{
-            background: {Config.MATERIAL_COLORS['error']};
+        .fluent-badge.error {{
+            background: {Config.FLUENT_COLORS['error']};
             color: white;
+            border-color: {Config.FLUENT_COLORS['error']};
         }}
         
-        /* Response Container - Material */
+        /* Response Container - Fluent */
         .response-container {{
-            background: {Config.MATERIAL_COLORS['surface']};
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
             border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
-                        0 1px 1px 0 rgba(0,0,0,0.14), 
-                        0 1px 3px 0 rgba(0,0,0,0.12);
+            padding: 1rem;
+            margin: 0.75rem 0;
+            box-shadow: 0 3px 10px {Config.FLUENT_COLORS['shadow_light']};
+            border-left: 4px solid {Config.FLUENT_COLORS['primary']};
         }}
         
-        /* Material Banner */
-        .material-banner {{
-            background: {Config.MATERIAL_COLORS['warning']};
-            color: white;
-            padding: 1rem 1.5rem;
-            margin: 0.75rem 0;
-            border-radius: 4px;
+        /* Fluent Banner */
+        .fluent-banner {{
+            background: rgba(255, 140, 0, 0.1);
+            border-left: 3px solid {Config.FLUENT_COLORS['warning']};
+            color: {Config.FLUENT_COLORS['text_primary']};
+            padding: 0.65rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 6px;
             font-size: 0.875rem;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
-                        0 1px 1px 0 rgba(0,0,0,0.14), 
-                        0 1px 3px 0 rgba(0,0,0,0.12);
+            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
+            backdrop-filter: blur(10px);
         }}
         
-        .material-banner.error {{
-            background: {Config.MATERIAL_COLORS['error']};
+        .fluent-banner.error {{
+            background: rgba(232, 17, 35, 0.1);
+            border-left-color: {Config.FLUENT_COLORS['error']};
         }}
         
-        .material-banner.success {{
-            background: {Config.MATERIAL_COLORS['success']};
+        .fluent-banner.success {{
+            background: rgba(16, 124, 16, 0.1);
+            border-left-color: {Config.FLUENT_COLORS['success']};
         }}
         
-        .material-banner.info {{
-            background: {Config.MATERIAL_COLORS['info']};
+        .fluent-banner.info {{
+            background: rgba(0, 120, 212, 0.1);
+            border-left-color: {Config.FLUENT_COLORS['info']};
         }}
         
-        /* Material Divider */
+        /* Divider - Fluent */
         hr {{
             border: none;
-            border-top: 1px solid {Config.MATERIAL_COLORS['divider']};
-            margin: 1.5rem 0;
+            border-top: 1px solid {Config.FLUENT_COLORS['divider']};
+            margin: 0.75rem 0;
         }}
         
-        /* Link Styling - Material */
+        /* Link Styling - Fluent */
         a {{
-            color: {Config.MATERIAL_COLORS['primary']};
+            color: {Config.FLUENT_COLORS['primary']};
             text-decoration: none;
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
+            border-bottom: 1px solid transparent;
         }}
         
         a:hover {{
-            color: {Config.MATERIAL_COLORS['primary_dark']};
-            text-decoration: underline;
+            color: {Config.FLUENT_COLORS['primary_hover']};
+            border-bottom: 1px solid {Config.FLUENT_COLORS['primary_hover']};
         }}
         
-        /* Code blocks - Material */
+        /* Code blocks - Fluent */
         code {{
-            font-family: 'Roboto Mono', monospace;
-            background: {Config.MATERIAL_COLORS['surface_variant']};
-            padding: 0.125rem 0.375rem;
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.125rem 0.4rem;
             font-size: 0.875rem;
             border-radius: 4px;
+            border: 1px solid {Config.FLUENT_COLORS['border']};
         }}
         
         pre {{
-            background: {Config.MATERIAL_COLORS['text_primary']};
+            background: {Config.FLUENT_COLORS['text_primary']};
             color: white;
-            padding: 1rem;
-            font-family: 'Roboto Mono', monospace;
+            padding: 0.75rem;
+            font-family: 'Consolas', 'Courier New', monospace;
             font-size: 0.875rem;
             overflow-x: auto;
-            border-radius: 4px;
-            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
-                        0 1px 1px 0 rgba(0,0,0,0.14), 
-                        0 1px 3px 0 rgba(0,0,0,0.12);
+            border-radius: 6px;
+            box-shadow: 0 3px 10px {Config.FLUENT_COLORS['shadow_medium']};
         }}
         
-        /* Loading State - Material */
-        .loading-skeleton {{
-            background: linear-gradient(90deg, {Config.MATERIAL_COLORS['divider']} 25%, {Config.MATERIAL_COLORS['surface_variant']} 50%, {Config.MATERIAL_COLORS['divider']} 75%);
+        /* Loading Animation - Fluent */
+        .loading-shimmer {{
+            background: linear-gradient(90deg, 
+                {Config.FLUENT_COLORS['surface_alt']} 25%, 
+                {Config.FLUENT_COLORS['surface']} 50%, 
+                {Config.FLUENT_COLORS['surface_alt']} 75%);
             background-size: 200% 100%;
-            animation: loading 1.5s ease-in-out infinite;
+            animation: shimmer 1.5s ease-in-out infinite;
         }}
         
-        @keyframes loading {{
+        @keyframes shimmer {{
             0% {{ background-position: 200% 0; }}
             100% {{ background-position: -200% 0; }}
         }}
         
-        /* Ripple Effect */
-        @keyframes ripple {{
-            to {{
-                transform: scale(4);
+        /* Reveal Animation - Fluent */
+        @keyframes reveal {{
+            from {{
                 opacity: 0;
+                transform: translateY(10px);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0);
             }}
         }}
         
         /* Focus visible for accessibility */
         *:focus-visible {{
-            outline: 2px solid {Config.MATERIAL_COLORS['primary']};
+            outline: 2px solid {Config.FLUENT_COLORS['primary']};
             outline-offset: 2px;
         }}
         
         /* Disabled state */
         button:disabled, input:disabled {{
-            opacity: 0.38;
+            opacity: 0.4;
             cursor: not-allowed;
         }}
         
-        /* FAB (Floating Action Button) */
-        .fab {{
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: {Config.MATERIAL_COLORS['secondary']};
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 
-                        0 6px 10px 0 rgba(0,0,0,0.14), 
-                        0 1px 18px 0 rgba(0,0,0,0.12);
-            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        /* Compact spacing adjustments */
+        [data-testid="stMarkdownContainer"] {{
+            padding: 0.25rem 0;
         }}
         
-        .fab:hover {{
-            box-shadow: 0 5px 5px -3px rgba(0,0,0,0.2), 
-                        0 8px 10px 1px rgba(0,0,0,0.14), 
-                        0 3px 14px 2px rgba(0,0,0,0.12);
-            transform: scale(1.05);
+        .element-container {{
+            margin: 0.25rem 0;
         }}
         </style>
         """, unsafe_allow_html=True)
     
     @staticmethod
     def render_header():
-        """Render header dengan Google Material Design"""
+        """Render header dengan Microsoft Fluent Design"""
         st.markdown(f"""
-        <div style='padding: 1.5rem 0;'>
-            <div style='color: {Config.MATERIAL_COLORS['text_secondary']}; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;'>
+        <div style='padding: 1rem 0 0.75rem 0;'>
+            <div style='color: {Config.FLUENT_COLORS['text_secondary']}; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; font-weight: 600;'>
                 Sistem Regulasi Pengadaan
             </div>
-            <h1 style='color: {Config.MATERIAL_COLORS['primary']}; font-weight: 400; margin: 0;'>
+            <h1 style='color: {Config.FLUENT_COLORS['primary']}; font-weight: 600; margin: 0; font-size: 1.75rem;'>
                 ReguBot
             </h1>
-            <p style='color: {Config.MATERIAL_COLORS['text_secondary']}; font-size: 1.125rem; margin-top: 0.75rem; font-weight: 300;'>
+            <p style='color: {Config.FLUENT_COLORS['text_secondary']}; font-size: 1rem; margin-top: 0.4rem; font-weight: 400;'>
                 Asisten cerdas untuk regulasi pengadaan barang dan jasa
             </p>
         </div>
@@ -850,18 +839,18 @@ class MaterialUI:
     
     @staticmethod
     def render_sidebar_logo():
-        """Render logo di sidebar dengan Material Design"""
+        """Render logo di sidebar dengan Fluent Design"""
         st.markdown(
-            f"<div style='text-align:center; padding: 1.5rem 0;'>"
+            f"<div style='text-align:center; padding: 1rem 0 0.75rem 0;'>"
             "<img src='https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.png' "
-            f"style='width: 100px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);'>"
+            f"style='width: 90px; border-radius: 8px; box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};'>"
             "</div>",
             unsafe_allow_html=True
         )
     
     @staticmethod
     def render_document_item(filename: str):
-        """Render item dokumen dengan Material styling"""
+        """Render item dokumen dengan Fluent styling"""
         st.markdown(
             f"<div class='doc-item'>📄 {filename}</div>",
             unsafe_allow_html=True
@@ -869,12 +858,12 @@ class MaterialUI:
     
     @staticmethod
     def render_response_with_badges(response: ResponseData):
-        """Render response dengan Material chips"""
+        """Render response dengan Fluent badges"""
         # Warning banner jika ada
         if response.warning:
             st.markdown(
-                f"<div class='material-banner'>"
-                f"<span class='material-icons' style='margin-right: 0.75rem;'>warning</span>"
+                f"<div class='fluent-banner'>"
+                f"<strong style='margin-right: 0.5rem;'>⚠️</strong>"
                 f"<span>{response.warning}</span>"
                 f"</div>",
                 unsafe_allow_html=True
@@ -886,8 +875,8 @@ class MaterialUI:
         # Note jika ada
         if response.note:
             st.markdown(
-                f"<div class='material-banner info' style='margin-top: 1rem;'>"
-                f"<span class='material-icons' style='margin-right: 0.75rem;'>info</span>"
+                f"<div class='fluent-banner info' style='margin-top: 0.5rem;'>"
+                f"<strong style='margin-right: 0.5rem;'>ℹ️</strong>"
                 f"<span>{response.note}</span>"
                 f"</div>",
                 unsafe_allow_html=True
@@ -895,20 +884,20 @@ class MaterialUI:
     
     @staticmethod
     def render_footer():
-        """Render footer dengan Google Material Design"""
+        """Render footer dengan Microsoft Fluent Design"""
         st.markdown(
             f"""
-            <div style='text-align:center; padding: 2rem 0 1rem 0; font-size: 0.75rem; color: {Config.MATERIAL_COLORS['text_secondary']};'>
-                <div style='margin-bottom: 0.75rem;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
+            <div style='text-align:center; padding: 1.25rem 0 0.75rem 0; font-size: 0.7rem; color: {Config.FLUENT_COLORS['text_tertiary']};'>
+                <div style='margin-bottom: 0.5rem;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
                 </div>
-                <div style='margin: 0.75rem 0; font-family: Roboto, sans-serif; font-weight: 400;'>
+                <div style='margin: 0.4rem 0; font-weight: 500;'>
                     © 2025 Yona Friantina
                 </div>
-                <div style='color: {Config.MATERIAL_COLORS['text_hint']}; font-size: 0.75rem; font-weight: 300;'>
+                <div style='color: {Config.FLUENT_COLORS['text_disabled']}; font-size: 0.7rem;'>
                     Built with Streamlit × Powered by Gemini AI
                 </div>
             </div>
@@ -935,7 +924,7 @@ class ReguBotApp:
             layout="wide",
             initial_sidebar_state="expanded"
         )
-        MaterialUI.inject_custom_css()
+        FluentUI.inject_custom_css()
     
     def initialize_session_state(self):
         """Initialize session state"""
@@ -950,12 +939,12 @@ class ReguBotApp:
     def render_sidebar(self):
         """Render sidebar dengan semua komponennya"""
         with st.sidebar:
-            MaterialUI.render_sidebar_logo()
+            FluentUI.render_sidebar_logo()
             
-            st.markdown("### 📂 Upload Dokumen Regulasi")
+            st.markdown("### 📂 Upload Dokumen")
             st.markdown(
-                f"<p style='font-size: 0.875rem; color: {Config.MATERIAL_COLORS['text_secondary']}; margin-bottom: 1rem;'>"
-                "Upload file PDF regulasi untuk jawaban yang terverifikasi"
+                f"<p style='font-size: 0.8rem; color: {Config.FLUENT_COLORS['text_secondary']}; margin-bottom: 0.5rem;'>"
+                "Upload file PDF regulasi untuk jawaban terverifikasi"
                 "</p>",
                 unsafe_allow_html=True
             )
@@ -973,12 +962,12 @@ class ReguBotApp:
                 if st.button("🚀 Proses", use_container_width=True):
                     if pdf_docs:
                         uploaded_names = [pdf.name for pdf in pdf_docs]
-                        with st.spinner("🔄 Memproses dokumen..."):
+                        with st.spinner("🔄 Memproses..."):
                             try:
                                 raw_text = self.pdf_processor.extract_text(pdf_docs)
                                 chunks = self.pdf_processor.create_chunks(raw_text)
                                 self.state_manager.save_state(uploaded_names)
-                                st.success("✅ Berhasil diproses!")
+                                st.success("✅ Berhasil!")
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"❌ Error: {e}")
@@ -1002,35 +991,35 @@ class ReguBotApp:
             if state["processed_files"]:
                 st.markdown("### 📚 Dokumen Terupload")
                 for filename in state["processed_files"]:
-                    MaterialUI.render_document_item(filename)
+                    FluentUI.render_document_item(filename)
                 
                 st.markdown("---")
                 
-                # Status info - Material Card
+                # Status info - Fluent Card
                 st.markdown(
-                    f"<div class='material-card'>"
-                    f"<div style='color: {Config.MATERIAL_COLORS['success']}; font-weight: 500; margin-bottom: 0.5rem; display: flex; align-items: center;'>"
-                    f"<span class='material-icons' style='font-size: 1.25rem; margin-right: 0.5rem;'>check_circle</span>"
-                    f"<span>Status: Terverifikasi</span>"
+                    f"<div class='fluent-card'>"
+                    f"<div style='color: {Config.FLUENT_COLORS['success']}; font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center;'>"
+                    f"<span style='margin-right: 0.4rem;'>✅</span>"
+                    f"<span style='font-size: 0.875rem;'>Status: Terverifikasi</span>"
                     f"</div>"
-                    f"<div style='font-size: 0.875rem; color: {Config.MATERIAL_COLORS['text_secondary']};'>Jawaban berdasarkan dokumen yang telah diupload</div>"
+                    f"<div style='font-size: 0.75rem; color: {Config.FLUENT_COLORS['text_secondary']};'>Jawaban berdasarkan dokumen yang diupload</div>"
                     f"</div>",
                     unsafe_allow_html=True
                 )
             else:
                 st.markdown(
-                    f"<div class='material-card' style='border-left: 4px solid {Config.MATERIAL_COLORS['warning']};'>"
-                    f"<div style='color: {Config.MATERIAL_COLORS['warning']}; font-weight: 500; margin-bottom: 0.5rem; display: flex; align-items: center;'>"
-                    f"<span class='material-icons' style='font-size: 1.25rem; margin-right: 0.5rem;'>warning</span>"
-                    f"<span>Status: Belum Ada Upload</span>"
+                    f"<div class='fluent-card' style='border-left: 3px solid {Config.FLUENT_COLORS['warning']};'>"
+                    f"<div style='color: {Config.FLUENT_COLORS['warning']}; font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center;'>"
+                    f"<span style='margin-right: 0.4rem;'>⚠️</span>"
+                    f"<span style='font-size: 0.875rem;'>Status: Belum Ada Upload</span>"
                     f"</div>"
-                    f"<div style='font-size: 0.875rem; color: {Config.MATERIAL_COLORS['text_secondary']};'>Upload regulasi untuk jawaban terverifikasi</div>"
+                    f"<div style='font-size: 0.75rem; color: {Config.FLUENT_COLORS['text_secondary']};'>Upload regulasi untuk jawaban terverifikasi</div>"
                     f"</div>",
                     unsafe_allow_html=True
                 )
             
             st.markdown("---")
-            MaterialUI.render_footer()
+            FluentUI.render_footer()
     
     def render_chat_interface(self):
         """Render chat interface"""
@@ -1055,7 +1044,7 @@ class ReguBotApp:
                         response = ResponseHandler.process_query(prompt, state)
                         
                         # Render response with proper formatting
-                        MaterialUI.render_response_with_badges(response)
+                        FluentUI.render_response_with_badges(response)
                         
                         # Prepare full response for history
                         full_response = response.output_text
@@ -1082,7 +1071,7 @@ class ReguBotApp:
         self.setup_page()
         self.initialize_session_state()
         
-        MaterialUI.render_header()
+        FluentUI.render_header()
         self.render_sidebar()
         self.render_chat_interface()
 
