@@ -72,32 +72,20 @@ class Config:
         "hps", "aanwijzing", "sanggah", "pascakualifikasi", "prakualifikasi"
     ]
     
-    # Microsoft Fluent Design Colors (Enhanced)
+    # Fluent Design Colors
     FLUENT_COLORS = {
         "primary": "#0078D4",
         "primary_hover": "#106EBE",
-        "primary_dark": "#005A9E",
-        "secondary": "#8764B8",
-        "accent": "#0099BC",
+        "secondary": "#005A9E",
+        "accent": "#2B88D8",
         "success": "#107C10",
         "warning": "#FF8C00",
         "error": "#E81123",
-        "info": "#0078D4",
         "background": "#F3F2F1",
-        "background_gradient": "linear-gradient(135deg, #F3F2F1 0%, #E1DFDD 100%)",
         "surface": "#FFFFFF",
-        "surface_alt": "#FAF9F8",
         "text_primary": "#323130",
         "text_secondary": "#605E5C",
-        "text_tertiary": "#8A8886",
-        "text_disabled": "#A19F9D",
-        "border": "#EDEBE9",
-        "border_strong": "#D2D0CE",
-        "divider": "#E1DFDD",
-        "overlay": "rgba(0, 0, 0, 0.4)",
-        "shadow_light": "rgba(0, 0, 0, 0.1)",
-        "shadow_medium": "rgba(0, 0, 0, 0.15)",
-        "shadow_strong": "rgba(0, 0, 0, 0.25)"
+        "border": "#EDEBE9"
     }
 
 # =========================
@@ -365,492 +353,254 @@ class ResponseHandler:
 # =========================
 
 class FluentUI:
-    """Komponen UI dengan Microsoft Fluent Design System (Enhanced & Compact)"""
+    """Komponen UI dengan Microsoft Fluent Design"""
     
     @staticmethod
     def inject_custom_css():
-        """Inject custom CSS untuk Microsoft Fluent Design"""
+        """Inject custom CSS untuk Fluent Design"""
         st.markdown(f"""
         <style>
         /* Import Segoe UI Font (Fluent Design) */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
         
-        /* Global Styles - Fluent Design */
+        /* Global Styles */
         * {{
-            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
         }}
         
-        /* Main Container with Fluent Acrylic Background */
+        /* Main Container */
         .stApp {{
-            background: {Config.FLUENT_COLORS['background_gradient']};
+            background: linear-gradient(135deg, {Config.FLUENT_COLORS['background']} 0%, #E1DFDD 100%);
         }}
         
-        /* Sidebar Styling - Fluent Acrylic */
+        /* Sidebar Styling */
         [data-testid="stSidebar"] {{
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: {Config.FLUENT_COLORS['surface']};
             border-right: 1px solid {Config.FLUENT_COLORS['border']};
-            box-shadow: 2px 0 12px {Config.FLUENT_COLORS['shadow_light']};
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
         }}
         
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
-            padding: 0.25rem;
+            padding: 0.5rem;
         }}
         
-        /* Typography - Fluent Design */
-        h1, h2, h3, h4, h5, h6 {{
+        /* Headers */
+        h1, h2, h3 {{
             color: {Config.FLUENT_COLORS['text_primary']};
             font-weight: 600;
-            letter-spacing: -0.01em;
+            letter-spacing: -0.02em;
         }}
         
         h1 {{
-            font-size: 1.75rem;
-            font-weight: 600;
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
+            font-size: 2rem;
+            margin-bottom: 1rem;
         }}
         
-        h2 {{
-            font-size: 1.5rem;
-            font-weight: 600;
-            line-height: 1.3;
-        }}
-        
-        h3 {{
-            font-size: 1.125rem;
-            font-weight: 600;
-            line-height: 1.4;
-            margin-bottom: 0.5rem;
-        }}
-        
-        p {{
-            color: {Config.FLUENT_COLORS['text_primary']};
-            line-height: 1.5;
-            font-size: 0.9375rem;
-        }}
-        
-        /* Buttons - Fluent Design (Compact) */
+        /* Buttons - Fluent Style */
         .stButton > button {{
             background: {Config.FLUENT_COLORS['primary']};
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 0.4rem 1rem;
+            padding: 0.5rem 1.5rem;
             font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
-            box-shadow: 0 1.6px 3.6px 0 {Config.FLUENT_COLORS['shadow_light']}, 
-                        0 0.3px 0.9px 0 {Config.FLUENT_COLORS['shadow_light']};
-            height: 32px;
-            min-width: 80px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }}
         
         .stButton > button:hover {{
             background: {Config.FLUENT_COLORS['primary_hover']};
-            box-shadow: 0 3.2px 7.2px 0 {Config.FLUENT_COLORS['shadow_medium']}, 
-                        0 0.6px 1.8px 0 {Config.FLUENT_COLORS['shadow_medium']};
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             transform: translateY(-1px);
         }}
         
         .stButton > button:active {{
             transform: translateY(0);
-            box-shadow: 0 0.8px 1.8px 0 {Config.FLUENT_COLORS['shadow_light']};
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }}
         
-        .stButton > button:focus {{
-            outline: 2px solid {Config.FLUENT_COLORS['primary']};
-            outline-offset: 2px;
-        }}
-        
-        /* File Uploader - Fluent Acrylic */
+        /* File Uploader */
         [data-testid="stFileUploader"] {{
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(20px);
+            background: white;
             border: 2px dashed {Config.FLUENT_COLORS['border']};
             border-radius: 8px;
-            padding: 1rem;
-            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
         }}
         
         [data-testid="stFileUploader"]:hover {{
             border-color: {Config.FLUENT_COLORS['primary']};
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_light']};
+            background: #F8F9FA;
         }}
         
-        /* Chat Messages - Fluent Cards */
+        /* Chat Messages */
         .stChatMessage {{
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
+            background: white;
             border-radius: 8px;
-            padding: 0.75rem;
-            margin: 0.4rem 0;
-            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
+            padding: 1rem;
+            margin: 0.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border-left: 3px solid {Config.FLUENT_COLORS['primary']};
-            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
         }}
         
-        .stChatMessage:hover {{
-            box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};
-            transform: translateX(2px);
-        }}
-        
-        /* Chat Input - Fluent Style */
+        /* Chat Input */
         .stChatInput {{
-            border-radius: 20px;
-            border: 1.5px solid {Config.FLUENT_COLORS['border']};
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
-            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
+            border-radius: 24px;
+            border: 2px solid {Config.FLUENT_COLORS['border']};
+            background: white;
+            transition: all 0.3s ease;
         }}
         
         .stChatInput:focus-within {{
             border-color: {Config.FLUENT_COLORS['primary']};
-            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1),
-                        0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};
-        }}
-        
-        /* Input Fields - Fluent */
-        input, textarea {{
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid {Config.FLUENT_COLORS['border']};
-            border-radius: 4px;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.9375rem;
-            color: {Config.FLUENT_COLORS['text_primary']};
-            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
-        }}
-        
-        input:hover, textarea:hover {{
-            border-color: {Config.FLUENT_COLORS['border_strong']};
-            background: rgba(255, 255, 255, 0.95);
-        }}
-        
-        input:focus, textarea:focus {{
-            outline: none;
-            border-color: {Config.FLUENT_COLORS['primary']};
             box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
         }}
         
-        /* Alerts - Fluent Notifications */
+        /* Alerts */
         .stAlert {{
-            border-radius: 6px;
+            border-radius: 8px;
             border: none;
-            padding: 0.65rem 1rem;
-            box-shadow: 0 3px 8px {Config.FLUENT_COLORS['shadow_light']};
-            font-size: 0.875rem;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }}
         
         /* Success Alert */
         [data-baseweb="notification"] {{
             background: {Config.FLUENT_COLORS['success']};
             color: white;
-            border-radius: 6px;
+            border-radius: 8px;
         }}
         
         /* Warning Alert */
         .stWarning {{
             background: #FFF4CE;
-            border-left: 3px solid {Config.FLUENT_COLORS['warning']};
+            border-left: 4px solid {Config.FLUENT_COLORS['warning']};
             color: #333;
         }}
         
-        /* Error Alert */
-        .stError {{
-            background: #FDE7E9;
-            border-left: 3px solid {Config.FLUENT_COLORS['error']};
-            color: #333;
-        }}
-        
-        /* Info Alert */
-        .stInfo {{
-            background: #E7F3FF;
-            border-left: 3px solid {Config.FLUENT_COLORS['info']};
-            color: #333;
-        }}
-        
-        /* Fluent Cards */
-        .fluent-card {{
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
+        /* Info Cards */
+        .info-card {{
+            background: white;
             border-radius: 8px;
-            padding: 0.75rem;
-            margin: 0.4rem 0;
-            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
-            border: 1px solid {Config.FLUENT_COLORS['border']};
-            transition: all 0.2s cubic-bezier(0.33, 0, 0.67, 1);
-        }}
-        
-        .fluent-card:hover {{
-            box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};
-            transform: translateY(-2px);
-            border-color: {Config.FLUENT_COLORS['border_strong']};
-        }}
-        
-        /* Elevated Card */
-        .fluent-card-elevated {{
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(30px);
-            border-radius: 12px;
             padding: 1rem;
-            margin: 0.75rem 0;
-            box-shadow: 0 4px 16px {Config.FLUENT_COLORS['shadow_medium']};
-            border: 1px solid {Config.FLUENT_COLORS['border']};
+            margin: 0.5rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid {Config.FLUENT_COLORS['accent']};
         }}
         
-        /* Spinner - Fluent */
+        /* Spinner */
         .stSpinner > div {{
             border-color: {Config.FLUENT_COLORS['primary']} transparent transparent transparent;
         }}
         
-        /* Scrollbar - Fluent */
+        /* Scrollbar */
         ::-webkit-scrollbar {{
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
         }}
         
         ::-webkit-scrollbar-track {{
-            background: {Config.FLUENT_COLORS['surface_alt']};
-            border-radius: 5px;
+            background: {Config.FLUENT_COLORS['background']};
         }}
         
         ::-webkit-scrollbar-thumb {{
-            background: {Config.FLUENT_COLORS['border_strong']};
-            border-radius: 5px;
-            border: 2px solid {Config.FLUENT_COLORS['surface_alt']};
+            background: {Config.FLUENT_COLORS['border']};
+            border-radius: 4px;
         }}
         
         ::-webkit-scrollbar-thumb:hover {{
-            background: {Config.FLUENT_COLORS['text_tertiary']};
+            background: {Config.FLUENT_COLORS['text_secondary']};
         }}
         
-        /* Document List - Fluent */
+        /* Document List */
         .doc-item {{
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            padding: 0.5rem 0.75rem;
-            margin: 0.3rem 0;
+            background: white;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
             border-radius: 6px;
             border-left: 3px solid {Config.FLUENT_COLORS['accent']};
-            box-shadow: 0 1px 3px {Config.FLUENT_COLORS['shadow_light']};
-            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
-            font-size: 0.875rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
         }}
         
         .doc-item:hover {{
-            box-shadow: 0 2px 8px {Config.FLUENT_COLORS['shadow_medium']};
-            transform: translateX(4px);
-            border-left-width: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transform: translateX(2px);
         }}
         
-        /* Fluent Pills/Badges */
-        .fluent-badge {{
-            display: inline-flex;
-            align-items: center;
-            background: {Config.FLUENT_COLORS['surface']};
-            color: {Config.FLUENT_COLORS['text_primary']};
-            padding: 0.25rem 0.65rem;
-            height: 24px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 12px;
-            margin: 0.2rem;
-            border: 1px solid {Config.FLUENT_COLORS['border']};
-            box-shadow: 0 1px 2px {Config.FLUENT_COLORS['shadow_light']};
-        }}
-        
-        .fluent-badge.primary {{
-            background: {Config.FLUENT_COLORS['primary']};
-            color: white;
-            border-color: {Config.FLUENT_COLORS['primary']};
-        }}
-        
-        .fluent-badge.success {{
-            background: {Config.FLUENT_COLORS['success']};
-            color: white;
-            border-color: {Config.FLUENT_COLORS['success']};
-        }}
-        
-        .fluent-badge.warning {{
-            background: {Config.FLUENT_COLORS['warning']};
-            color: white;
-            border-color: {Config.FLUENT_COLORS['warning']};
-        }}
-        
-        .fluent-badge.error {{
-            background: {Config.FLUENT_COLORS['error']};
-            color: white;
-            border-color: {Config.FLUENT_COLORS['error']};
-        }}
-        
-        /* Response Container - Fluent */
-        .response-container {{
-            background: rgba(255, 255, 255, 0.8);
+        /* Acrylic Effect */
+        .acrylic {{
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(20px);
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.75rem 0;
-            box-shadow: 0 3px 10px {Config.FLUENT_COLORS['shadow_light']};
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }}
+        
+        /* Response Container */
+        .response-container {{
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             border-left: 4px solid {Config.FLUENT_COLORS['primary']};
         }}
         
-        /* Fluent Banner */
-        .fluent-banner {{
-            background: rgba(255, 140, 0, 0.1);
-            border-left: 3px solid {Config.FLUENT_COLORS['warning']};
-            color: {Config.FLUENT_COLORS['text_primary']};
-            padding: 0.65rem 1rem;
-            margin: 0.4rem 0;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 6px {Config.FLUENT_COLORS['shadow_light']};
-            backdrop-filter: blur(10px);
-        }}
-        
-        .fluent-banner.error {{
-            background: rgba(232, 17, 35, 0.1);
-            border-left-color: {Config.FLUENT_COLORS['error']};
-        }}
-        
-        .fluent-banner.success {{
-            background: rgba(16, 124, 16, 0.1);
-            border-left-color: {Config.FLUENT_COLORS['success']};
-        }}
-        
-        .fluent-banner.info {{
-            background: rgba(0, 120, 212, 0.1);
-            border-left-color: {Config.FLUENT_COLORS['info']};
-        }}
-        
-        /* Divider - Fluent */
-        hr {{
-            border: none;
-            border-top: 1px solid {Config.FLUENT_COLORS['divider']};
-            margin: 0.75rem 0;
-        }}
-        
-        /* Link Styling - Fluent */
-        a {{
-            color: {Config.FLUENT_COLORS['primary']};
-            text-decoration: none;
-            transition: all 0.15s cubic-bezier(0.33, 0, 0.67, 1);
-            border-bottom: 1px solid transparent;
-        }}
-        
-        a:hover {{
-            color: {Config.FLUENT_COLORS['primary_hover']};
-            border-bottom: 1px solid {Config.FLUENT_COLORS['primary_hover']};
-        }}
-        
-        /* Code blocks - Fluent */
-        code {{
-            font-family: 'Consolas', 'Courier New', monospace;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 0.125rem 0.4rem;
-            font-size: 0.875rem;
-            border-radius: 4px;
-            border: 1px solid {Config.FLUENT_COLORS['border']};
-        }}
-        
-        pre {{
-            background: {Config.FLUENT_COLORS['text_primary']};
+        /* Source Badge */
+        .source-badge {{
+            display: inline-block;
+            background: {Config.FLUENT_COLORS['accent']};
             color: white;
-            padding: 0.75rem;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.875rem;
-            overflow-x: auto;
-            border-radius: 6px;
-            box-shadow: 0 3px 10px {Config.FLUENT_COLORS['shadow_medium']};
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 0.25rem;
         }}
         
-        /* Loading Animation - Fluent */
-        .loading-shimmer {{
-            background: linear-gradient(90deg, 
-                {Config.FLUENT_COLORS['surface_alt']} 25%, 
-                {Config.FLUENT_COLORS['surface']} 50%, 
-                {Config.FLUENT_COLORS['surface_alt']} 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s ease-in-out infinite;
-        }}
-        
-        @keyframes shimmer {{
-            0% {{ background-position: 200% 0; }}
-            100% {{ background-position: -200% 0; }}
-        }}
-        
-        /* Reveal Animation - Fluent */
-        @keyframes reveal {{
-            from {{
-                opacity: 0;
-                transform: translateY(10px);
-            }}
-            to {{
-                opacity: 1;
-                transform: translateY(0);
-            }}
-        }}
-        
-        /* Focus visible for accessibility */
-        *:focus-visible {{
-            outline: 2px solid {Config.FLUENT_COLORS['primary']};
-            outline-offset: 2px;
-        }}
-        
-        /* Disabled state */
-        button:disabled, input:disabled {{
-            opacity: 0.4;
-            cursor: not-allowed;
-        }}
-        
-        /* Compact spacing adjustments */
-        [data-testid="stMarkdownContainer"] {{
-            padding: 0.25rem 0;
-        }}
-        
-        .element-container {{
-            margin: 0.25rem 0;
+        /* Warning Badge */
+        .warning-badge {{
+            display: inline-block;
+            background: {Config.FLUENT_COLORS['warning']};
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
         }}
         </style>
         """, unsafe_allow_html=True)
     
     @staticmethod
     def render_header():
-        """Render header dengan Microsoft Fluent Design"""
-        st.markdown(f"""
-        <div style='padding: 1rem 0 0.75rem 0;'>
-            <div style='color: {Config.FLUENT_COLORS['text_secondary']}; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; font-weight: 600;'>
-                Sistem Regulasi Pengadaan
-            </div>
-            <h1 style='color: {Config.FLUENT_COLORS['primary']}; font-weight: 600; margin: 0; font-size: 1.75rem;'>
-                ReguBot
+        """Render header dengan Fluent Design"""
+        st.markdown("""
+        <div style='text-align: center; padding: 1rem 0;'>
+            <h1 style='color: #0078D4; font-weight: 700; margin-bottom: 0.5rem;'>
+                🤖 ReguBot
             </h1>
-            <p style='color: {Config.FLUENT_COLORS['text_secondary']}; font-size: 1rem; margin-top: 0.4rem; font-weight: 400;'>
-                Asisten cerdas untuk regulasi pengadaan barang dan jasa
+            <p style='color: #605E5C; font-size: 1.1rem; margin: 0;'>
+                Asisten Cerdas Regulasi Pengadaan Barang/Jasa
             </p>
         </div>
         """, unsafe_allow_html=True)
     
     @staticmethod
     def render_sidebar_logo():
-        """Render logo di sidebar dengan Fluent Design"""
+        """Render logo di sidebar"""
         st.markdown(
-            f"<div style='text-align:center; padding: 1rem 0 0.75rem 0;'>"
+            "<div style='text-align:center; padding: 1rem 0;'>"
             "<img src='https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.png' "
-            f"style='width: 90px; border-radius: 8px; box-shadow: 0 4px 12px {Config.FLUENT_COLORS['shadow_medium']};'>"
+            "style='width: 120px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>"
             "</div>",
             unsafe_allow_html=True
         )
     
     @staticmethod
     def render_document_item(filename: str):
-        """Render item dokumen dengan Fluent styling"""
+        """Render item dokumen dengan styling"""
         st.markdown(
             f"<div class='doc-item'>📄 {filename}</div>",
             unsafe_allow_html=True
@@ -858,14 +608,11 @@ class FluentUI:
     
     @staticmethod
     def render_response_with_badges(response: ResponseData):
-        """Render response dengan Fluent badges"""
-        # Warning banner jika ada
+        """Render response dengan badges"""
+        # Warning badge jika ada
         if response.warning:
             st.markdown(
-                f"<div class='fluent-banner'>"
-                f"<strong style='margin-right: 0.5rem;'>⚠️</strong>"
-                f"<span>{response.warning}</span>"
-                f"</div>",
+                f"<div class='warning-badge'>{response.warning}</div>",
                 unsafe_allow_html=True
             )
         
@@ -874,31 +621,25 @@ class FluentUI:
         
         # Note jika ada
         if response.note:
-            st.markdown(
-                f"<div class='fluent-banner info' style='margin-top: 0.5rem;'>"
-                f"<strong style='margin-right: 0.5rem;'>ℹ️</strong>"
-                f"<span>{response.note}</span>"
-                f"</div>",
-                unsafe_allow_html=True
-            )
+            st.info(response.note)
     
     @staticmethod
     def render_footer():
-        """Render footer dengan Microsoft Fluent Design"""
+        """Render footer dengan copyright"""
         st.markdown(
-            f"""
-            <div style='text-align:center; padding: 1.25rem 0 0.75rem 0; font-size: 0.7rem; color: {Config.FLUENT_COLORS['text_tertiary']};'>
+            """
+            <div style='text-align:center; padding: 2rem 0 1rem 0; font-size:12px; color:#777;'>
                 <div style='margin-bottom: 0.5rem;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:0.9em;max-height:0.9em;margin:0 0.15em;opacity:0.6;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
                 </div>
-                <div style='margin: 0.4rem 0; font-weight: 500;'>
-                    © 2025 Yona Friantina
+                <div style='margin: 0.5rem 0;'>
+                    © 2025 Yona Friantina. Some rights reserved.
                 </div>
-                <div style='color: {Config.FLUENT_COLORS['text_disabled']}; font-size: 0.7rem;'>
-                    Built with Streamlit × Powered by Gemini AI
+                <div style='font-size:11px; color:#999;'>
+                    Built with Streamlit • Powered by Gemini AI
                 </div>
             </div>
             """,
@@ -941,10 +682,10 @@ class ReguBotApp:
         with st.sidebar:
             FluentUI.render_sidebar_logo()
             
-            st.markdown("### 📂 Upload Dokumen")
+            st.markdown("### 📂 Upload Dokumen Regulasi")
             st.markdown(
-                f"<p style='font-size: 0.8rem; color: {Config.FLUENT_COLORS['text_secondary']}; margin-bottom: 0.5rem;'>"
-                "Upload file PDF regulasi untuk jawaban terverifikasi"
+                "<p style='font-size: 0.9rem; color: #605E5C; margin-bottom: 1rem;'>"
+                "Upload file PDF regulasi untuk jawaban yang terverifikasi"
                 "</p>",
                 unsafe_allow_html=True
             )
@@ -962,12 +703,12 @@ class ReguBotApp:
                 if st.button("🚀 Proses", use_container_width=True):
                     if pdf_docs:
                         uploaded_names = [pdf.name for pdf in pdf_docs]
-                        with st.spinner("🔄 Memproses..."):
+                        with st.spinner("🔄 Memproses dokumen..."):
                             try:
                                 raw_text = self.pdf_processor.extract_text(pdf_docs)
                                 chunks = self.pdf_processor.create_chunks(raw_text)
                                 self.state_manager.save_state(uploaded_names)
-                                st.success("✅ Berhasil!")
+                                st.success("✅ Berhasil diproses!")
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"❌ Error: {e}")
@@ -995,26 +736,20 @@ class ReguBotApp:
                 
                 st.markdown("---")
                 
-                # Status info - Fluent Card
+                # Status info
                 st.markdown(
-                    f"<div class='fluent-card'>"
-                    f"<div style='color: {Config.FLUENT_COLORS['success']}; font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center;'>"
-                    f"<span style='margin-right: 0.4rem;'>✅</span>"
-                    f"<span style='font-size: 0.875rem;'>Status: Terverifikasi</span>"
-                    f"</div>"
-                    f"<div style='font-size: 0.75rem; color: {Config.FLUENT_COLORS['text_secondary']};'>Jawaban berdasarkan dokumen yang diupload</div>"
-                    f"</div>",
+                    "<div class='info-card'>"
+                    "<strong>✅ Status:</strong> Regulasi Terverifikasi<br>"
+                    "<small>Jawaban berdasarkan dokumen yang telah diupload</small>"
+                    "</div>",
                     unsafe_allow_html=True
                 )
             else:
                 st.markdown(
-                    f"<div class='fluent-card' style='border-left: 3px solid {Config.FLUENT_COLORS['warning']};'>"
-                    f"<div style='color: {Config.FLUENT_COLORS['warning']}; font-weight: 600; margin-bottom: 0.25rem; display: flex; align-items: center;'>"
-                    f"<span style='margin-right: 0.4rem;'>⚠️</span>"
-                    f"<span style='font-size: 0.875rem;'>Status: Belum Ada Upload</span>"
-                    f"</div>"
-                    f"<div style='font-size: 0.75rem; color: {Config.FLUENT_COLORS['text_secondary']};'>Upload regulasi untuk jawaban terverifikasi</div>"
-                    f"</div>",
+                    "<div class='info-card' style='border-left-color: #FF8C00;'>"
+                    "<strong>⚠️ Status:</strong> Belum Ada Upload<br>"
+                    "<small>Upload regulasi untuk jawaban terverifikasi</small>"
+                    "</div>",
                     unsafe_allow_html=True
                 )
             
