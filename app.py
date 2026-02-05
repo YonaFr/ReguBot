@@ -72,31 +72,30 @@ class Config:
         "hps", "aanwijzing", "sanggah", "pascakualifikasi", "prakualifikasi"
     ]
     
-    # IBM Carbon Design Colors
-    CARBON_COLORS = {
-        "primary": "#0f62fe",
-        "primary_hover": "#0353e9",
-        "secondary": "#393939",
-        "accent": "#0043ce",
-        "success": "#24a148",
-        "warning": "#f1c21b",
-        "error": "#da1e28",
-        "background": "#f4f4f4",
-        "surface": "#ffffff",
-        "ui_01": "#f4f4f4",
-        "ui_02": "#ffffff",
-        "ui_03": "#e0e0e0",
-        "ui_04": "#8d8d8d",
-        "ui_05": "#161616",
-        "text_primary": "#161616",
-        "text_secondary": "#525252",
-        "text_placeholder": "#a8a8a8",
-        "border": "#e0e0e0",
-        "border_strong": "#8d8d8d",
-        "layer_01": "#f4f4f4",
-        "layer_02": "#ffffff",
-        "field_01": "#f4f4f4",
-        "field_02": "#ffffff"
+    # Google Material Design Colors
+    MATERIAL_COLORS = {
+        "primary": "#1976D2",
+        "primary_dark": "#1565C0",
+        "primary_light": "#BBDEFB",
+        "secondary": "#FF6F00",
+        "secondary_dark": "#E65100",
+        "secondary_light": "#FFE0B2",
+        "accent": "#00BCD4",
+        "success": "#4CAF50",
+        "warning": "#FF9800",
+        "error": "#F44336",
+        "info": "#2196F3",
+        "background": "#FAFAFA",
+        "surface": "#FFFFFF",
+        "surface_variant": "#F5F5F5",
+        "text_primary": "#212121",
+        "text_secondary": "#757575",
+        "text_hint": "#9E9E9E",
+        "text_disabled": "#BDBDBD",
+        "divider": "#E0E0E0",
+        "border": "#BDBDBD",
+        "overlay": "rgba(0, 0, 0, 0.54)",
+        "shadow": "rgba(0, 0, 0, 0.2)"
     }
 
 # =========================
@@ -319,7 +318,7 @@ class ResponseHandler:
         
         return ResponseData(
             output_text=validated,
-            note="",
+            note=f"✅ Sumber: {', '.join(uploaded_regs)}",
             source_type="regulation"
         )
     
@@ -363,386 +362,421 @@ class ResponseHandler:
 # 🎨 UI/UX MODULE - FLUENT DESIGN
 # =========================
 
-class CarbonUI:
-    """Komponen UI dengan IBM Carbon Design System"""
+class MaterialUI:
+    """Komponen UI dengan Google Material Design System"""
     
     @staticmethod
     def inject_custom_css():
-        """Inject custom CSS untuk IBM Carbon Design"""
+        """Inject custom CSS untuk Google Material Design"""
         st.markdown(f"""
         <style>
-        /* Import IBM Plex Font Family (Carbon Design) */
-        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        /* Import Roboto Font Family (Material Design) */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
         
-        /* Global Styles - Carbon Design */
+        /* Global Styles - Material Design */
         * {{
-            font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }}
         
         /* Main Container */
         .stApp {{
-            background: {Config.CARBON_COLORS['ui_01']};
+            background: {Config.MATERIAL_COLORS['background']};
         }}
         
-        /* Sidebar Styling - Carbon */
+        /* Sidebar Styling - Material */
         [data-testid="stSidebar"] {{
-            background: {Config.CARBON_COLORS['layer_02']};
-            border-right: 1px solid {Config.CARBON_COLORS['border']};
+            background: {Config.MATERIAL_COLORS['surface']};
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            border-right: none;
         }}
         
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
             padding: 0.5rem;
         }}
         
-        /* Typography - IBM Plex */
+        /* Typography - Material Design */
         h1, h2, h3, h4, h5, h6 {{
-            color: {Config.CARBON_COLORS['text_primary']};
-            font-weight: 600;
-            letter-spacing: 0;
-            line-height: 1.2;
+            color: {Config.MATERIAL_COLORS['text_primary']};
+            font-weight: 500;
+            letter-spacing: 0.0125em;
+            margin: 0;
         }}
         
         h1 {{
-            font-size: 2.625rem;
-            font-weight: 300;
-            margin-bottom: 1rem;
+            font-size: 2.125rem;
+            font-weight: 400;
+            letter-spacing: 0;
+            line-height: 1.235;
+            margin-bottom: 0.5rem;
         }}
         
         h2 {{
-            font-size: 2rem;
-            font-weight: 400;
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: 0.0075em;
+            line-height: 1.334;
         }}
         
         h3 {{
-            font-size: 1.75rem;
-            font-weight: 400;
+            font-size: 1.25rem;
+            font-weight: 500;
+            letter-spacing: 0.0075em;
+            line-height: 1.6;
         }}
         
         p {{
-            color: {Config.CARBON_COLORS['text_primary']};
+            color: {Config.MATERIAL_COLORS['text_primary']};
             line-height: 1.5;
-            font-size: 0.875rem;
+            font-size: 1rem;
+            letter-spacing: 0.03125em;
         }}
         
-        /* Buttons - Carbon Design */
+        /* Buttons - Material Design (Raised) */
         .stButton > button {{
-            background: {Config.CARBON_COLORS['primary']};
-            color: {Config.CARBON_COLORS['ui_02']};
-            border: 1px solid transparent;
-            border-radius: 0;
-            padding: 0.875rem 1rem;
-            font-weight: 400;
+            background: {Config.MATERIAL_COLORS['primary']};
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
             font-size: 0.875rem;
-            letter-spacing: 0.16px;
-            transition: background 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
-            box-shadow: none;
-            height: 48px;
-            min-width: 100px;
-            outline: 2px solid transparent;
-            outline-offset: -2px;
+            letter-spacing: 0.0892857143em;
+            text-transform: uppercase;
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 3px 1px -2px rgba(0,0,0,0.2), 
+                        0 2px 2px 0 rgba(0,0,0,0.14), 
+                        0 1px 5px 0 rgba(0,0,0,0.12);
+            height: 36px;
+            min-width: 64px;
         }}
         
         .stButton > button:hover {{
-            background: {Config.CARBON_COLORS['primary_hover']};
+            background: {Config.MATERIAL_COLORS['primary_dark']};
+            box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), 
+                        0 4px 5px 0 rgba(0,0,0,0.14), 
+                        0 1px 10px 0 rgba(0,0,0,0.12);
         }}
         
         .stButton > button:active {{
-            background: {Config.CARBON_COLORS['accent']};
+            box-shadow: 0 5px 5px -3px rgba(0,0,0,0.2), 
+                        0 8px 10px 1px rgba(0,0,0,0.14), 
+                        0 3px 14px 2px rgba(0,0,0,0.12);
         }}
         
         .stButton > button:focus {{
-            outline: 2px solid {Config.CARBON_COLORS['primary']};
-            outline-offset: 2px;
-        }}
-        
-        /* Secondary Button */
-        .stButton.secondary > button {{
-            background: transparent;
-            color: {Config.CARBON_COLORS['primary']};
-            border: 1px solid {Config.CARBON_COLORS['primary']};
-        }}
-        
-        .stButton.secondary > button:hover {{
-            background: {Config.CARBON_COLORS['primary_hover']};
-            color: {Config.CARBON_COLORS['ui_02']};
-        }}
-        
-        /* File Uploader - Carbon */
-        [data-testid="stFileUploader"] {{
-            background: {Config.CARBON_COLORS['field_02']};
-            border: 1px solid {Config.CARBON_COLORS['border']};
-            border-radius: 0;
-            padding: 1rem;
-            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
-        }}
-        
-        [data-testid="stFileUploader"]:hover {{
-            background: {Config.CARBON_COLORS['ui_01']};
-        }}
-        
-        [data-testid="stFileUploader"]:focus-within {{
-            outline: 2px solid {Config.CARBON_COLORS['primary']};
-            outline-offset: -2px;
-        }}
-        
-        /* Chat Messages - Carbon */
-        .stChatMessage {{
-            background: {Config.CARBON_COLORS['layer_02']};
-            border-radius: 0;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-left: 3px solid {Config.CARBON_COLORS['primary']};
-            box-shadow: none;
-        }}
-        
-        /* Chat Input - Carbon */
-        .stChatInput {{
-            border-radius: 0;
-            border-bottom: 1px solid {Config.CARBON_COLORS['border_strong']};
-            background: {Config.CARBON_COLORS['field_02']};
-            transition: border 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
-        }}
-        
-        .stChatInput:focus-within {{
-            border-bottom: 2px solid {Config.CARBON_COLORS['primary']};
             outline: none;
         }}
         
-        /* Input Fields */
+        /* File Uploader - Material */
+        [data-testid="stFileUploader"] {{
+            background: {Config.MATERIAL_COLORS['surface']};
+            border: 2px dashed {Config.MATERIAL_COLORS['border']};
+            border-radius: 4px;
+            padding: 1.5rem;
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+        
+        [data-testid="stFileUploader"]:hover {{
+            border-color: {Config.MATERIAL_COLORS['primary']};
+            background: {Config.MATERIAL_COLORS['surface_variant']};
+        }}
+        
+        /* Chat Messages - Material Cards */
+        .stChatMessage {{
+            background: {Config.MATERIAL_COLORS['surface']};
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
+                        0 1px 1px 0 rgba(0,0,0,0.14), 
+                        0 1px 3px 0 rgba(0,0,0,0.12);
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+        
+        .stChatMessage:hover {{
+            box-shadow: 0 3px 3px -2px rgba(0,0,0,0.2), 
+                        0 3px 4px 0 rgba(0,0,0,0.14), 
+                        0 1px 8px 0 rgba(0,0,0,0.12);
+        }}
+        
+        /* Chat Input - Material */
+        .stChatInput {{
+            border-radius: 24px;
+            border: 1px solid {Config.MATERIAL_COLORS['divider']};
+            background: {Config.MATERIAL_COLORS['surface']};
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
+                        0 1px 1px 0 rgba(0,0,0,0.14), 
+                        0 1px 3px 0 rgba(0,0,0,0.12);
+        }}
+        
+        .stChatInput:focus-within {{
+            border-color: {Config.MATERIAL_COLORS['primary']};
+            box-shadow: 0 3px 3px -2px rgba(0,0,0,0.2), 
+                        0 3px 4px 0 rgba(0,0,0,0.14), 
+                        0 1px 8px 0 rgba(0,0,0,0.12);
+        }}
+        
+        /* Input Fields - Material */
         input, textarea {{
-            background: {Config.CARBON_COLORS['field_02']};
+            background: transparent;
             border: none;
-            border-bottom: 1px solid {Config.CARBON_COLORS['ui_04']};
-            border-radius: 0;
-            padding: 0.6875rem 1rem;
-            font-size: 0.875rem;
-            color: {Config.CARBON_COLORS['text_primary']};
-            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+            border-bottom: 1px solid {Config.MATERIAL_COLORS['divider']};
+            border-radius: 4px 4px 0 0;
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            color: {Config.MATERIAL_COLORS['text_primary']};
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+        
+        input:hover, textarea:hover {{
+            background: rgba(0, 0, 0, 0.04);
         }}
         
         input:focus, textarea:focus {{
-            outline: 2px solid {Config.CARBON_COLORS['primary']};
-            outline-offset: -2px;
-            border-bottom: 1px solid {Config.CARBON_COLORS['primary']};
+            outline: none;
+            border-bottom: 2px solid {Config.MATERIAL_COLORS['primary']};
+            background: rgba(0, 0, 0, 0.04);
         }}
         
-        /* Alerts - Carbon Notification */
+        /* Alerts - Material Snackbar/Alert */
         .stAlert {{
-            border-radius: 0;
-            border-left: 3px solid;
-            padding: 1rem;
-            box-shadow: none;
+            border-radius: 4px;
+            border: none;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 
+                        0 6px 10px 0 rgba(0,0,0,0.14), 
+                        0 1px 18px 0 rgba(0,0,0,0.12);
             font-size: 0.875rem;
         }}
         
-        /* Success Notification */
+        /* Success Alert */
         [data-baseweb="notification"] {{
-            background: {Config.CARBON_COLORS['success']};
-            color: {Config.CARBON_COLORS['ui_02']};
-            border-radius: 0;
-            border-left: 3px solid {Config.CARBON_COLORS['success']};
+            background: {Config.MATERIAL_COLORS['success']};
+            color: white;
+            border-radius: 4px;
         }}
         
-        /* Warning Notification */
+        /* Warning Alert */
         .stWarning {{
-            background: {Config.CARBON_COLORS['warning']};
-            border-left-color: {Config.CARBON_COLORS['warning']};
-            color: {Config.CARBON_COLORS['text_primary']};
+            background: {Config.MATERIAL_COLORS['warning']};
+            color: white;
         }}
         
-        /* Error Notification */
+        /* Error Alert */
         .stError {{
-            background: {Config.CARBON_COLORS['error']};
-            border-left-color: {Config.CARBON_COLORS['error']};
-            color: {Config.CARBON_COLORS['ui_02']};
+            background: {Config.MATERIAL_COLORS['error']};
+            color: white;
         }}
         
-        /* Info Notification */
+        /* Info Alert */
         .stInfo {{
-            background: {Config.CARBON_COLORS['primary']};
-            border-left-color: {Config.CARBON_COLORS['primary']};
-            color: {Config.CARBON_COLORS['ui_02']};
+            background: {Config.MATERIAL_COLORS['info']};
+            color: white;
         }}
         
-        /* Carbon Tiles */
-        .carbon-tile {{
-            background: {Config.CARBON_COLORS['layer_02']};
-            border: 1px solid {Config.CARBON_COLORS['border']};
+        /* Material Cards */
+        .material-card {{
+            background: {Config.MATERIAL_COLORS['surface']};
+            border-radius: 4px;
             padding: 1rem;
-            margin: 0.5rem 0;
-            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+            margin: 0.75rem 0;
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
+                        0 1px 1px 0 rgba(0,0,0,0.14), 
+                        0 1px 3px 0 rgba(0,0,0,0.12);
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
         }}
         
-        .carbon-tile:hover {{
-            background: {Config.CARBON_COLORS['ui_01']};
+        .material-card:hover {{
+            box-shadow: 0 3px 3px -2px rgba(0,0,0,0.2), 
+                        0 3px 4px 0 rgba(0,0,0,0.14), 
+                        0 1px 8px 0 rgba(0,0,0,0.12);
+            transform: translateY(-2px);
         }}
         
-        /* Spinner - Carbon */
+        /* Elevated Card */
+        .material-card-elevated {{
+            background: {Config.MATERIAL_COLORS['surface']};
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 5px -2px rgba(0,0,0,0.2), 
+                        0 7px 10px 1px rgba(0,0,0,0.14), 
+                        0 2px 16px 1px rgba(0,0,0,0.12);
+        }}
+        
+        /* Spinner - Material */
         .stSpinner > div {{
-            border-color: {Config.CARBON_COLORS['primary']} transparent transparent transparent;
+            border-color: {Config.MATERIAL_COLORS['primary']} transparent transparent transparent;
         }}
         
-        /* Scrollbar - Carbon */
+        /* Scrollbar - Material */
         ::-webkit-scrollbar {{
-            width: 8px;
-            height: 8px;
+            width: 12px;
+            height: 12px;
         }}
         
         ::-webkit-scrollbar-track {{
-            background: {Config.CARBON_COLORS['ui_01']};
+            background: {Config.MATERIAL_COLORS['background']};
         }}
         
         ::-webkit-scrollbar-thumb {{
-            background: {Config.CARBON_COLORS['ui_04']};
-            border-radius: 0;
+            background: {Config.MATERIAL_COLORS['text_hint']};
+            border-radius: 6px;
+            border: 3px solid {Config.MATERIAL_COLORS['background']};
         }}
         
         ::-webkit-scrollbar-thumb:hover {{
-            background: {Config.CARBON_COLORS['border_strong']};
+            background: {Config.MATERIAL_COLORS['text_secondary']};
         }}
         
-        /* Document List - Carbon */
+        /* Document List - Material */
         .doc-item {{
-            background: {Config.CARBON_COLORS['layer_02']};
+            background: {Config.MATERIAL_COLORS['surface']};
             padding: 0.75rem 1rem;
             margin: 0.5rem 0;
-            border-left: 3px solid {Config.CARBON_COLORS['primary']};
-            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+            border-radius: 4px;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 
+                        0 1px 2px 0 rgba(0,0,0,0.06);
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 0.875rem;
+            border-left: 4px solid {Config.MATERIAL_COLORS['primary']};
         }}
         
         .doc-item:hover {{
-            background: {Config.CARBON_COLORS['ui_01']};
-            border-left-width: 4px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 
+                        0 2px 4px -1px rgba(0,0,0,0.06);
+            transform: translateX(4px);
         }}
         
-        /* Carbon Tag */
-        .carbon-tag {{
-            display: inline-block;
-            background: {Config.CARBON_COLORS['ui_03']};
-            color: {Config.CARBON_COLORS['text_primary']};
-            padding: 0 0.5rem;
-            height: 1.5rem;
-            line-height: 1.5rem;
-            font-size: 0.75rem;
-            font-weight: 400;
-            letter-spacing: 0.32px;
-            border-radius: 0.9375rem;
+        /* Material Chips */
+        .material-chip {{
+            display: inline-flex;
+            align-items: center;
+            background: {Config.MATERIAL_COLORS['surface_variant']};
+            color: {Config.MATERIAL_COLORS['text_primary']};
+            padding: 0 0.75rem;
+            height: 32px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border-radius: 16px;
             margin: 0.25rem;
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
         }}
         
-        /* Carbon Tag - Blue */
-        .carbon-tag.blue {{
-            background: {Config.CARBON_COLORS['primary']};
-            color: {Config.CARBON_COLORS['ui_02']};
+        .material-chip:hover {{
+            background: {Config.MATERIAL_COLORS['divider']};
         }}
         
-        /* Carbon Tag - Red */
-        .carbon-tag.red {{
-            background: {Config.CARBON_COLORS['error']};
-            color: {Config.CARBON_COLORS['ui_02']};
+        /* Material Chip - Primary */
+        .material-chip.primary {{
+            background: {Config.MATERIAL_COLORS['primary']};
+            color: white;
         }}
         
-        /* Carbon Tag - Green */
-        .carbon-tag.green {{
-            background: {Config.CARBON_COLORS['success']};
-            color: {Config.CARBON_COLORS['ui_02']};
+        /* Material Chip - Success */
+        .material-chip.success {{
+            background: {Config.MATERIAL_COLORS['success']};
+            color: white;
         }}
         
-        /* Carbon Tag - Yellow */
-        .carbon-tag.yellow {{
-            background: {Config.CARBON_COLORS['warning']};
-            color: {Config.CARBON_COLORS['text_primary']};
+        /* Material Chip - Warning */
+        .material-chip.warning {{
+            background: {Config.MATERIAL_COLORS['warning']};
+            color: white;
         }}
         
-        /* Response Container - Carbon */
+        /* Material Chip - Error */
+        .material-chip.error {{
+            background: {Config.MATERIAL_COLORS['error']};
+            color: white;
+        }}
+        
+        /* Response Container - Material */
         .response-container {{
-            background: {Config.CARBON_COLORS['layer_02']};
+            background: {Config.MATERIAL_COLORS['surface']};
+            border-radius: 8px;
             padding: 1.5rem;
             margin: 1rem 0;
-            border-left: 3px solid {Config.CARBON_COLORS['primary']};
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
+                        0 1px 1px 0 rgba(0,0,0,0.14), 
+                        0 1px 3px 0 rgba(0,0,0,0.12);
         }}
         
-        /* Notification Banner */
-        .notification-banner {{
-            background: {Config.CARBON_COLORS['warning']};
-            color: {Config.CARBON_COLORS['text_primary']};
-            padding: 0.75rem 1rem;
-            margin: 0.5rem 0;
-            border-left: 3px solid #be6c00;
+        /* Material Banner */
+        .material-banner {{
+            background: {Config.MATERIAL_COLORS['warning']};
+            color: white;
+            padding: 1rem 1.5rem;
+            margin: 0.75rem 0;
+            border-radius: 4px;
             font-size: 0.875rem;
             display: flex;
             align-items: center;
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
+                        0 1px 1px 0 rgba(0,0,0,0.14), 
+                        0 1px 3px 0 rgba(0,0,0,0.12);
         }}
         
-        .notification-banner.error {{
-            background: {Config.CARBON_COLORS['error']};
-            color: {Config.CARBON_COLORS['ui_02']};
-            border-left-color: #a2191f;
+        .material-banner.error {{
+            background: {Config.MATERIAL_COLORS['error']};
         }}
         
-        .notification-banner.success {{
-            background: {Config.CARBON_COLORS['success']};
-            color: {Config.CARBON_COLORS['ui_02']};
-            border-left-color: #198038;
+        .material-banner.success {{
+            background: {Config.MATERIAL_COLORS['success']};
         }}
         
-        .notification-banner.info {{
-            background: {Config.CARBON_COLORS['primary']};
-            color: {Config.CARBON_COLORS['ui_02']};
-            border-left-color: {Config.CARBON_COLORS['accent']};
+        .material-banner.info {{
+            background: {Config.MATERIAL_COLORS['info']};
         }}
         
-        /* Carbon Breadcrumb */
-        .carbon-breadcrumb {{
-            color: {Config.CARBON_COLORS['text_secondary']};
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-        }}
-        
-        /* Carbon Divider */
+        /* Material Divider */
         hr {{
             border: none;
-            border-top: 1px solid {Config.CARBON_COLORS['border']};
-            margin: 1rem 0;
+            border-top: 1px solid {Config.MATERIAL_COLORS['divider']};
+            margin: 1.5rem 0;
         }}
         
-        /* Link Styling */
+        /* Link Styling - Material */
         a {{
-            color: {Config.CARBON_COLORS['primary']};
+            color: {Config.MATERIAL_COLORS['primary']};
             text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: border-bottom 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
         }}
         
         a:hover {{
-            border-bottom: 1px solid {Config.CARBON_COLORS['primary']};
+            color: {Config.MATERIAL_COLORS['primary_dark']};
+            text-decoration: underline;
         }}
         
-        /* Code blocks */
+        /* Code blocks - Material */
         code {{
-            font-family: 'IBM Plex Mono', monospace;
-            background: {Config.CARBON_COLORS['ui_01']};
-            padding: 0.125rem 0.5rem;
+            font-family: 'Roboto Mono', monospace;
+            background: {Config.MATERIAL_COLORS['surface_variant']};
+            padding: 0.125rem 0.375rem;
             font-size: 0.875rem;
-            border-radius: 0;
+            border-radius: 4px;
         }}
         
         pre {{
-            background: {Config.CARBON_COLORS['ui_05']};
-            color: {Config.CARBON_COLORS['ui_02']};
+            background: {Config.MATERIAL_COLORS['text_primary']};
+            color: white;
             padding: 1rem;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: 'Roboto Mono', monospace;
             font-size: 0.875rem;
             overflow-x: auto;
-            border-left: 3px solid {Config.CARBON_COLORS['primary']};
+            border-radius: 4px;
+            box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 
+                        0 1px 1px 0 rgba(0,0,0,0.14), 
+                        0 1px 3px 0 rgba(0,0,0,0.12);
         }}
         
-        /* Loading State */
+        /* Loading State - Material */
         .loading-skeleton {{
-            background: linear-gradient(90deg, {Config.CARBON_COLORS['ui_03']} 25%, {Config.CARBON_COLORS['ui_01']} 50%, {Config.CARBON_COLORS['ui_03']} 75%);
+            background: linear-gradient(90deg, {Config.MATERIAL_COLORS['divider']} 25%, {Config.MATERIAL_COLORS['surface_variant']} 50%, {Config.MATERIAL_COLORS['divider']} 75%);
             background-size: 200% 100%;
             animation: loading 1.5s ease-in-out infinite;
         }}
@@ -752,32 +786,63 @@ class CarbonUI:
             100% {{ background-position: -200% 0; }}
         }}
         
+        /* Ripple Effect */
+        @keyframes ripple {{
+            to {{
+                transform: scale(4);
+                opacity: 0;
+            }}
+        }}
+        
         /* Focus visible for accessibility */
         *:focus-visible {{
-            outline: 2px solid {Config.CARBON_COLORS['primary']};
+            outline: 2px solid {Config.MATERIAL_COLORS['primary']};
             outline-offset: 2px;
         }}
         
         /* Disabled state */
         button:disabled, input:disabled {{
-            opacity: 0.5;
+            opacity: 0.38;
             cursor: not-allowed;
+        }}
+        
+        /* FAB (Floating Action Button) */
+        .fab {{
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: {Config.MATERIAL_COLORS['secondary']};
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 
+                        0 6px 10px 0 rgba(0,0,0,0.14), 
+                        0 1px 18px 0 rgba(0,0,0,0.12);
+            transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+        
+        .fab:hover {{
+            box-shadow: 0 5px 5px -3px rgba(0,0,0,0.2), 
+                        0 8px 10px 1px rgba(0,0,0,0.14), 
+                        0 3px 14px 2px rgba(0,0,0,0.12);
+            transform: scale(1.05);
         }}
         </style>
         """, unsafe_allow_html=True)
     
     @staticmethod
     def render_header():
-        """Render header dengan IBM Carbon Design"""
+        """Render header dengan Google Material Design"""
         st.markdown(f"""
-        <div style='padding: 2rem 0 1rem 0;'>
-            <div style='color: {Config.CARBON_COLORS['text_secondary']}; font-size: 0.875rem; margin-bottom: 0.5rem; letter-spacing: 0.16px;'>
-                SISTEM INFORMASI REGULASI
+        <div style='padding: 1.5rem 0;'>
+            <div style='color: {Config.MATERIAL_COLORS['text_secondary']}; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;'>
+                Sistem Regulasi Pengadaan
             </div>
-            <h1 style='color: {Config.CARBON_COLORS['text_primary']}; font-weight: 300; margin: 0;'>
+            <h1 style='color: {Config.MATERIAL_COLORS['primary']}; font-weight: 400; margin: 0;'>
                 ReguBot
             </h1>
-            <p style='color: {Config.CARBON_COLORS['text_secondary']}; font-size: 1rem; margin-top: 0.5rem;'>
+            <p style='color: {Config.MATERIAL_COLORS['text_secondary']}; font-size: 1.125rem; margin-top: 0.75rem; font-weight: 300;'>
                 Asisten cerdas untuk regulasi pengadaan barang dan jasa
             </p>
         </div>
@@ -785,18 +850,18 @@ class CarbonUI:
     
     @staticmethod
     def render_sidebar_logo():
-        """Render logo di sidebar dengan Carbon Design"""
+        """Render logo di sidebar dengan Material Design"""
         st.markdown(
-            f"<div style='text-align:center; padding: 1.5rem 0; background: {Config.CARBON_COLORS['ui_01']};'>"
+            f"<div style='text-align:center; padding: 1.5rem 0;'>"
             "<img src='https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.png' "
-            "style='width: 100px;'>"
+            f"style='width: 100px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);'>"
             "</div>",
             unsafe_allow_html=True
         )
     
     @staticmethod
     def render_document_item(filename: str):
-        """Render item dokumen dengan Carbon styling"""
+        """Render item dokumen dengan Material styling"""
         st.markdown(
             f"<div class='doc-item'>📄 {filename}</div>",
             unsafe_allow_html=True
@@ -804,12 +869,13 @@ class CarbonUI:
     
     @staticmethod
     def render_response_with_badges(response: ResponseData):
-        """Render response dengan Carbon tags"""
-        # Warning badge jika ada
+        """Render response dengan Material chips"""
+        # Warning banner jika ada
         if response.warning:
             st.markdown(
-                f"<div class='notification-banner'>"
-                f"<strong>⚠</strong>&nbsp;&nbsp;{response.warning}"
+                f"<div class='material-banner'>"
+                f"<span class='material-icons' style='margin-right: 0.75rem;'>warning</span>"
+                f"<span>{response.warning}</span>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -820,28 +886,29 @@ class CarbonUI:
         # Note jika ada
         if response.note:
             st.markdown(
-                f"<div class='notification-banner info' style='margin-top: 1rem;'>"
-                f"<strong>ℹ</strong>&nbsp;&nbsp;{response.note}"
+                f"<div class='material-banner info' style='margin-top: 1rem;'>"
+                f"<span class='material-icons' style='margin-right: 0.75rem;'>info</span>"
+                f"<span>{response.note}</span>"
                 f"</div>",
                 unsafe_allow_html=True
             )
     
     @staticmethod
     def render_footer():
-        """Render footer dengan IBM Carbon Design"""
+        """Render footer dengan Google Material Design"""
         st.markdown(
             f"""
-            <div style='text-align:center; padding: 2rem 0 1rem 0; font-size: 0.75rem; color: {Config.CARBON_COLORS['text_secondary']};'>
+            <div style='text-align:center; padding: 2rem 0 1rem 0; font-size: 0.75rem; color: {Config.MATERIAL_COLORS['text_secondary']};'>
                 <div style='margin-bottom: 0.75rem;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.6;'>
                 </div>
-                <div style='margin: 0.5rem 0; font-family: IBM Plex Sans, sans-serif; letter-spacing: 0.16px;'>
+                <div style='margin: 0.75rem 0; font-family: Roboto, sans-serif; font-weight: 400;'>
                     © 2025 Yona Friantina
                 </div>
-                <div style='color: {Config.CARBON_COLORS['text_placeholder']}; font-size: 0.75rem; letter-spacing: 0.32px;'>
+                <div style='color: {Config.MATERIAL_COLORS['text_hint']}; font-size: 0.75rem; font-weight: 300;'>
                     Built with Streamlit × Powered by Gemini AI
                 </div>
             </div>
@@ -868,7 +935,7 @@ class ReguBotApp:
             layout="wide",
             initial_sidebar_state="expanded"
         )
-        CarbonUI.inject_custom_css()
+        MaterialUI.inject_custom_css()
     
     def initialize_session_state(self):
         """Initialize session state"""
@@ -883,11 +950,11 @@ class ReguBotApp:
     def render_sidebar(self):
         """Render sidebar dengan semua komponennya"""
         with st.sidebar:
-            CarbonUI.render_sidebar_logo()
+            MaterialUI.render_sidebar_logo()
             
             st.markdown("### 📂 Upload Dokumen Regulasi")
             st.markdown(
-                f"<p style='font-size: 0.875rem; color: {Config.CARBON_COLORS['text_secondary']}; margin-bottom: 1rem;'>"
+                f"<p style='font-size: 0.875rem; color: {Config.MATERIAL_COLORS['text_secondary']}; margin-bottom: 1rem;'>"
                 "Upload file PDF regulasi untuk jawaban yang terverifikasi"
                 "</p>",
                 unsafe_allow_html=True
@@ -935,29 +1002,35 @@ class ReguBotApp:
             if state["processed_files"]:
                 st.markdown("### 📚 Dokumen Terupload")
                 for filename in state["processed_files"]:
-                    CarbonUI.render_document_item(filename)
+                    MaterialUI.render_document_item(filename)
                 
                 st.markdown("---")
                 
-                # Status info
+                # Status info - Material Card
                 st.markdown(
-                    f"<div class='carbon-tile'>"
-                    f"<div style='color: {Config.CARBON_COLORS['success']}; font-weight: 600; margin-bottom: 0.25rem;'>✅ Status: Terverifikasi</div>"
-                    f"<div style='font-size: 0.75rem; color: {Config.CARBON_COLORS['text_secondary']};'>Jawaban berdasarkan dokumen yang telah diupload</div>"
+                    f"<div class='material-card'>"
+                    f"<div style='color: {Config.MATERIAL_COLORS['success']}; font-weight: 500; margin-bottom: 0.5rem; display: flex; align-items: center;'>"
+                    f"<span class='material-icons' style='font-size: 1.25rem; margin-right: 0.5rem;'>check_circle</span>"
+                    f"<span>Status: Terverifikasi</span>"
+                    f"</div>"
+                    f"<div style='font-size: 0.875rem; color: {Config.MATERIAL_COLORS['text_secondary']};'>Jawaban berdasarkan dokumen yang telah diupload</div>"
                     f"</div>",
                     unsafe_allow_html=True
                 )
             else:
                 st.markdown(
-                    f"<div class='carbon-tile' style='border-left: 3px solid {Config.CARBON_COLORS['warning']};'>"
-                    f"<div style='color: {Config.CARBON_COLORS['warning']}; font-weight: 600; margin-bottom: 0.25rem;'>⚠️ Status: Belum Ada Upload</div>"
-                    f"<div style='font-size: 0.75rem; color: {Config.CARBON_COLORS['text_secondary']};'>Upload regulasi untuk jawaban terverifikasi</div>"
+                    f"<div class='material-card' style='border-left: 4px solid {Config.MATERIAL_COLORS['warning']};'>"
+                    f"<div style='color: {Config.MATERIAL_COLORS['warning']}; font-weight: 500; margin-bottom: 0.5rem; display: flex; align-items: center;'>"
+                    f"<span class='material-icons' style='font-size: 1.25rem; margin-right: 0.5rem;'>warning</span>"
+                    f"<span>Status: Belum Ada Upload</span>"
+                    f"</div>"
+                    f"<div style='font-size: 0.875rem; color: {Config.MATERIAL_COLORS['text_secondary']};'>Upload regulasi untuk jawaban terverifikasi</div>"
                     f"</div>",
                     unsafe_allow_html=True
                 )
             
             st.markdown("---")
-            CarbonUI.render_footer()
+            MaterialUI.render_footer()
     
     def render_chat_interface(self):
         """Render chat interface"""
@@ -982,7 +1055,7 @@ class ReguBotApp:
                         response = ResponseHandler.process_query(prompt, state)
                         
                         # Render response with proper formatting
-                        CarbonUI.render_response_with_badges(response)
+                        MaterialUI.render_response_with_badges(response)
                         
                         # Prepare full response for history
                         full_response = response.output_text
@@ -1009,7 +1082,7 @@ class ReguBotApp:
         self.setup_page()
         self.initialize_session_state()
         
-        CarbonUI.render_header()
+        MaterialUI.render_header()
         self.render_sidebar()
         self.render_chat_interface()
 
