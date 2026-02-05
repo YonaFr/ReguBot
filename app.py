@@ -353,276 +353,83 @@ class ResponseHandler:
 # =========================
 
 class FluentUI:
-    """Komponen UI dengan Microsoft Fluent Design"""
-    
     @staticmethod
     def inject_custom_css():
-        """Inject custom CSS untuk Fluent Design"""
-        st.markdown(f"""
-        <style>
-        /* Import Segoe UI Font (Fluent Design) */
-        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
-        
-        /* Global Styles */
-        * {{
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-        }}
-        
-        /* Main Container */
-        .stApp {{
-            background: linear-gradient(135deg, {Config.FLUENT_COLORS['background']} 0%, #E1DFDD 100%);
-        }}
-        
-        /* Sidebar Styling */
-        [data-testid="stSidebar"] {{
-            background: {Config.FLUENT_COLORS['surface']};
-            border-right: 1px solid {Config.FLUENT_COLORS['border']};
-            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
-        }}
-        
-        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
-            padding: 0.5rem;
-        }}
-        
-        /* Headers */
-        h1, h2, h3 {{
-            color: {Config.FLUENT_COLORS['text_primary']};
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }}
-        
-        h1 {{
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }}
-        
-        /* Buttons - Fluent Style */
-        .stButton > button {{
-            background: {Config.FLUENT_COLORS['primary']};
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }}
-        
-        .stButton > button:hover {{
-            background: {Config.FLUENT_COLORS['primary_hover']};
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            transform: translateY(-1px);
-        }}
-        
-        .stButton > button:active {{
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }}
-        
-        /* File Uploader */
-        [data-testid="stFileUploader"] {{
-            background: white;
-            border: 2px dashed {Config.FLUENT_COLORS['border']};
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }}
-        
-        [data-testid="stFileUploader"]:hover {{
-            border-color: {Config.FLUENT_COLORS['primary']};
-            background: #F8F9FA;
-        }}
-        
-        /* Chat Messages */
-        .stChatMessage {{
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 3px solid {Config.FLUENT_COLORS['primary']};
-        }}
-        
-        /* Chat Input */
-        .stChatInput {{
-            border-radius: 24px;
-            border: 2px solid {Config.FLUENT_COLORS['border']};
-            background: white;
-            transition: all 0.3s ease;
-        }}
-        
-        .stChatInput:focus-within {{
-            border-color: {Config.FLUENT_COLORS['primary']};
-            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
-        }}
-        
-        /* Alerts */
-        .stAlert {{
-            border-radius: 8px;
-            border: none;
-            padding: 1rem 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }}
-        
-        /* Success Alert */
-        [data-baseweb="notification"] {{
-            background: {Config.FLUENT_COLORS['success']};
-            color: white;
-            border-radius: 8px;
-        }}
-        
-        /* Warning Alert */
-        .stWarning {{
-            background: #FFF4CE;
-            border-left: 4px solid {Config.FLUENT_COLORS['warning']};
-            color: #333;
-        }}
-        
-        /* Info Cards */
-        .info-card {{
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid {Config.FLUENT_COLORS['accent']};
-        }}
-        
-        /* Spinner */
-        .stSpinner > div {{
-            border-color: {Config.FLUENT_COLORS['primary']} transparent transparent transparent;
-        }}
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {{
-            width: 8px;
-            height: 8px;
-        }}
-        
-        ::-webkit-scrollbar-track {{
-            background: {Config.FLUENT_COLORS['background']};
-        }}
-        
-        ::-webkit-scrollbar-thumb {{
-            background: {Config.FLUENT_COLORS['border']};
-            border-radius: 4px;
-        }}
-        
-        ::-webkit-scrollbar-thumb:hover {{
-            background: {Config.FLUENT_COLORS['text_secondary']};
-        }}
-        
-        /* Document List */
-        .doc-item {{
-            background: white;
-            padding: 0.75rem 1rem;
-            margin: 0.5rem 0;
-            border-radius: 6px;
-            border-left: 3px solid {Config.FLUENT_COLORS['accent']};
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-        }}
-        
-        .doc-item:hover {{
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transform: translateX(2px);
-        }}
-        
-        /* Acrylic Effect */
-        .acrylic {{
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }}
-        
-        /* Response Container */
-        .response-container {{
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-left: 4px solid {Config.FLUENT_COLORS['primary']};
-        }}
-        
-        /* Source Badge */
-        .source-badge {{
-            display: inline-block;
-            background: {Config.FLUENT_COLORS['accent']};
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin: 0.25rem;
-        }}
-        
-        /* Warning Badge */
-        .warning-badge {{
-            display: inline-block;
-            background: {Config.FLUENT_COLORS['warning']};
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin: 0.5rem 0;
-        }}
-        </style>
-        """, unsafe_allow_html=True)
+    st.markdown(f"""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
     
-    @staticmethod
-    def render_header():
-        """Render header dengan Fluent Design"""
-        st.markdown("""
-        <div style='text-align: center; padding: 1rem 0;'>
-            <h1 style='color: #0078D4; font-weight: 700; margin-bottom: 0.5rem;'>
-                🤖 ReguBot
-            </h1>
-            <p style='color: #605E5C; font-size: 1.1rem; margin: 0;'>
-                Asisten Cerdas Regulasi Pengadaan Barang/Jasa
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
     
-    @staticmethod
-    def render_sidebar_logo():
-        """Render logo di sidebar"""
-        st.markdown(
-            "<div style='text-align:center; padding: 1rem 0;'>"
-            "<img src='https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.png' "
-            "style='width: 120px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>"
-            "</div>",
-            unsafe_allow_html=True
-        )
+    * {{
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
+    }}
     
-    @staticmethod
-    def render_document_item(filename: str):
-        """Render item dokumen dengan styling"""
-        st.markdown(
-            f"<div class='doc-item'>📄 {filename}</div>",
-            unsafe_allow_html=True
-        )
     
-    @staticmethod
-    def render_response_with_badges(response: ResponseData):
-        """Render response dengan badges"""
-        # Warning badge jika ada
-        if response.warning:
-            st.markdown(
-                f"<div class='warning-badge'>{response.warning}</div>",
-                unsafe_allow_html=True
-            )
+    /* App Background */
+    .stApp {{
+    background: linear-gradient(180deg, {Config.FLUENT_COLORS['background']} 0%, #ECECEC 100%);
+    }}
+    
+    
+    /* Responsive Layout */
+    @media (max-width: 1024px) {{
+    .block-container {{
+    padding: 1rem !important;
+    }}
+    }}
+    
+    
+    @media (max-width: 640px) {{
+    h1 {{ font-size: 1.4rem; }}
+    h2 {{ font-size: 1.2rem; }}
+    .stButton > button {{ width: 100%; }}
+    }}
+    
+    
+    /* Sidebar */
+    [data-testid="stSidebar"] {{
+    background: white;
+    border-right: 1px solid {Config.FLUENT_COLORS['border']};
+    min-width: 280px;
+    }}
+    
+    
+    /* Header */
+    .header-container {{
+    text-align: center;
+    padding: 1rem 0 0.5rem 0;
+    }}
+    
+    
+    .header-title {{
+    font-size: 2rem;
+    font-weight: 700;
+    color: {Config.FLUENT_COLORS['primary']};
+    }}
+    
+    
+    .header-subtitle {{
+    color: {Config.FLUENT_COLORS['text_secondary']};
+    font-size: 1rem;
+    }}
+    
+    
+    /* Chat Messages */
+    .stChatMessage {{
+    background: white;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 4px solid {Config.FLUENT_COLORS['primary']};
+    }}
+    
+    
+    /* Input */
+    .stChatInput {{
+    border-radius: 28px;
+    st.info(response.note)
         
-        # Main response
-        st.markdown(response.output_text)
-        
-        # Note jika ada
-        if response.note:
-            st.info(response.note)
-    
     @staticmethod
     def render_footer():
         """Render footer dengan copyright"""
