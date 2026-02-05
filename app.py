@@ -349,18 +349,10 @@ class ResponseHandler:
             return ResponseHandler.handle_non_pbj(question)
 
 # =========================
-# 🎨 UI/UX MODULE - FLUENT DESIGN
-# =========================
-
-# UI-ONLY REFACTOR: Enterprise & Government Grade Responsive Fluent Design
-# NOTE: Business logic, AI logic, and data flow are UNCHANGED.
-
-# =========================
 # 🎨 UI/UX MODULE - ENTERPRISE RESPONSIVE FLUENT DESIGN
 # =========================
 
 class FluentUI:
-    """Enterprise-grade Fluent UI with responsive desktop/mobile support"""
 
     @staticmethod
     def inject_custom_css():
@@ -487,8 +479,8 @@ class FluentUI:
     def render_header():
         st.markdown("""
         <div class='header-container'>
-            <div class='header-title'>🤖 ReguBot</div>
-            <div class='header-subtitle'>Enterprise Assistant for Procurement Regulation</div>
+            <div class='header-title'>ReguBot</div>
+            <div class='header-subtitle'>Regulasi ChatBot</div>
         </div>
         """, unsafe_allow_html=True)
 
