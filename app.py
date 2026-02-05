@@ -989,12 +989,6 @@ class ReguBotApp:
             # Tampilkan dokumen yang sudah diupload
             state = self.state_manager.load_state()
             if state["processed_files"]:
-                st.markdown("### 📚 Dokumen Terupload")
-                for filename in state["processed_files"]:
-                    FluentUI.render_document_item(filename)
-                
-                st.markdown("---")
-                
                 # Status info - Fluent Card
                 st.markdown(
                     f"<div class='fluent-card'>"
@@ -1019,6 +1013,13 @@ class ReguBotApp:
                 )
             
             st.markdown("---")
+                
+                st.markdown("### 📚 Dokumen Terupload")
+                for filename in state["processed_files"]:
+                    FluentUI.render_document_item(filename)
+                
+                st.markdown("---")
+                
             FluentUI.render_footer()
     
     def render_chat_interface(self):
