@@ -352,87 +352,171 @@ class ResponseHandler:
 # 🎨 UI/UX MODULE - FLUENT DESIGN
 # =========================
 
+# UI-ONLY REFACTOR: Enterprise & Government Grade Responsive Fluent Design
+# NOTE: Business logic, AI logic, and data flow are UNCHANGED.
+
+# =========================
+# 🎨 UI/UX MODULE - ENTERPRISE RESPONSIVE FLUENT DESIGN
+# =========================
+
 class FluentUI:
+    """Enterprise-grade Fluent UI with responsive desktop/mobile support"""
+
     @staticmethod
     def inject_custom_css():
-    st.markdown(f"""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
-    
-    
-    * {{
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    box-sizing: border-box;
-    }}
-    
-    
-    /* App Background */
-    .stApp {{
-    background: linear-gradient(180deg, {Config.FLUENT_COLORS['background']} 0%, #ECECEC 100%);
-    }}
-    
-    
-    /* Responsive Layout */
-    @media (max-width: 1024px) {{
-    .block-container {{
-    padding: 1rem !important;
-    }}
-    }}
-    
-    
-    @media (max-width: 640px) {{
-    h1 {{ font-size: 1.4rem; }}
-    h2 {{ font-size: 1.2rem; }}
-    .stButton > button {{ width: 100%; }}
-    }}
-    
-    
-    /* Sidebar */
-    [data-testid="stSidebar"] {{
-    background: white;
-    border-right: 1px solid {Config.FLUENT_COLORS['border']};
-    min-width: 280px;
-    }}
-    
-    
-    /* Header */
-    .header-container {{
-    text-align: center;
-    padding: 1rem 0 0.5rem 0;
-    }}
-    
-    
-    .header-title {{
-    font-size: 2rem;
-    font-weight: 700;
-    color: {Config.FLUENT_COLORS['primary']};
-    }}
-    
-    
-    .header-subtitle {{
-    color: {Config.FLUENT_COLORS['text_secondary']};
-    font-size: 1rem;
-    }}
-    
-    
-    /* Chat Messages */
-    .stChatMessage {{
-    background: white;
-    border-radius: 10px;
-    padding: 0.85rem 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border-left: 4px solid {Config.FLUENT_COLORS['primary']};
-    }}
-    
-    
-    /* Input */
-    .stChatInput {{
-    border-radius: 28px;
-    st.info(response.note)
-        
+        st.markdown(f"""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
+
+        * {{
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            box-sizing: border-box;
+        }}
+
+        /* App Background */
+        .stApp {{
+            background: linear-gradient(180deg, {Config.FLUENT_COLORS['background']} 0%, #ECECEC 100%);
+        }}
+
+        /* Responsive Layout */
+        @media (max-width: 1024px) {{
+            .block-container {{
+                padding: 1rem !important;
+            }}
+        }}
+
+        @media (max-width: 640px) {{
+            h1 {{ font-size: 1.4rem; }}
+            h2 {{ font-size: 1.2rem; }}
+            .stButton > button {{ width: 100%; }}
+        }}
+
+        /* Sidebar */
+        [data-testid="stSidebar"] {{
+            background: white;
+            border-right: 1px solid {Config.FLUENT_COLORS['border']};
+            min-width: 280px;
+        }}
+
+        /* Header */
+        .header-container {{
+            text-align: center;
+            padding: 1rem 0 0.5rem 0;
+        }}
+
+        .header-title {{
+            font-size: 2rem;
+            font-weight: 700;
+            color: {Config.FLUENT_COLORS['primary']};
+        }}
+
+        .header-subtitle {{
+            color: {Config.FLUENT_COLORS['text_secondary']};
+            font-size: 1rem;
+        }}
+
+        /* Chat Messages */
+        .stChatMessage {{
+            background: white;
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid {Config.FLUENT_COLORS['primary']};
+        }}
+
+        /* Input */
+        .stChatInput {{
+            border-radius: 28px;
+            border: 2px solid {Config.FLUENT_COLORS['border']};
+            padding: 0.6rem;
+        }}
+
+        .stChatInput:focus-within {{
+            border-color: {Config.FLUENT_COLORS['primary']};
+            box-shadow: 0 0 0 4px rgba(0,120,212,0.12);
+        }}
+
+        /* Buttons */
+        .stButton > button {{
+            background: {Config.FLUENT_COLORS['primary']};
+            border-radius: 6px;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+        }}
+
+        /* Cards */
+        .enterprise-card {{
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid {Config.FLUENT_COLORS['accent']};
+        }}
+
+        /* Document Items */
+        .doc-item {{
+            padding: 0.65rem 0.9rem;
+            border-radius: 6px;
+            background: #FAFAFA;
+            border-left: 3px solid {Config.FLUENT_COLORS['accent']};
+            font-size: 0.95rem;
+        }}
+
+        /* Warning Badge */
+        .warning-badge {{
+            background: {Config.FLUENT_COLORS['warning']};
+            color: white;
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }}
+
+        /* Footer */
+        .footer {{
+            text-align: center;
+            padding: 1.2rem 0;
+            font-size: 12px;
+            color: #777;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
+
+    @staticmethod
+    def render_header():
+        st.markdown("""
+        <div class='header-container'>
+            <div class='header-title'>🤖 ReguBot</div>
+            <div class='header-subtitle'>Enterprise Assistant for Procurement Regulation</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    @staticmethod
+    def render_sidebar_logo():
+        st.markdown(
+            "<div style='text-align:center; padding: 0.75rem 0;'>"
+            "<img src='https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.png' style='width: 110px; border-radius: 10px;'>"
+            "</div>", unsafe_allow_html=True
+        )
+
+    @staticmethod
+    def render_document_item(filename: str):
+        st.markdown(f"<div class='doc-item'>📄 {filename}</div>", unsafe_allow_html=True)
+
+    @staticmethod
+    def render_response_with_badges(response: ResponseData):
+        if response.warning:
+            st.markdown(f"<div class='warning-badge'>{response.warning}</div>", unsafe_allow_html=True)
+
+        st.markdown(f"<div class='enterprise-card'>{response.output_text}</div>", unsafe_allow_html=True)
+
+        if response.note:
+            st.info(response.note)
+
     @staticmethod
     def render_footer():
-        """Render footer dengan copyright"""
+        """Render footer dengan copyright (TEKS TIDAK DIUBAH)"""
         st.markdown(
             """
             <div style='text-align:center; padding: 2rem 0 1rem 0; font-size:12px; color:#777;'>
@@ -452,6 +536,11 @@ class FluentUI:
             """,
             unsafe_allow_html=True
         )
+        st.markdown(
+            "<div class='footer'>© 2025 ReguBot • Fluent Government UI • Streamlit + Gemini</div>",
+            unsafe_allow_html=True
+        )
+
 
 # =========================
 # 🚀 MAIN APPLICATION
