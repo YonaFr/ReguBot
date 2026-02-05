@@ -34,7 +34,7 @@ class Config:
     """Konfigurasi aplikasi yang terpusat"""
     STATE_FILE = "app_state.json"
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash-preview:generateContent"
+    GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
     
     # Excluded regulations (dapat dikustomisasi)
     EXCLUDED_REGULATIONS = [
