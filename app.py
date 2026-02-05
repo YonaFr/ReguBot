@@ -72,20 +72,31 @@ class Config:
         "hps", "aanwijzing", "sanggah", "pascakualifikasi", "prakualifikasi"
     ]
     
-    # Fluent Design Colors
-    FLUENT_COLORS = {
-        "primary": "#0078D4",
-        "primary_hover": "#106EBE",
-        "secondary": "#005A9E",
-        "accent": "#2B88D8",
-        "success": "#107C10",
-        "warning": "#FF8C00",
-        "error": "#E81123",
-        "background": "#F3F2F1",
-        "surface": "#FFFFFF",
-        "text_primary": "#323130",
-        "text_secondary": "#605E5C",
-        "border": "#EDEBE9"
+    # IBM Carbon Design Colors
+    CARBON_COLORS = {
+        "primary": "#0f62fe",
+        "primary_hover": "#0353e9",
+        "secondary": "#393939",
+        "accent": "#0043ce",
+        "success": "#24a148",
+        "warning": "#f1c21b",
+        "error": "#da1e28",
+        "background": "#f4f4f4",
+        "surface": "#ffffff",
+        "ui_01": "#f4f4f4",
+        "ui_02": "#ffffff",
+        "ui_03": "#e0e0e0",
+        "ui_04": "#8d8d8d",
+        "ui_05": "#161616",
+        "text_primary": "#161616",
+        "text_secondary": "#525252",
+        "text_placeholder": "#a8a8a8",
+        "border": "#e0e0e0",
+        "border_strong": "#8d8d8d",
+        "layer_01": "#f4f4f4",
+        "layer_02": "#ffffff",
+        "field_01": "#f4f4f4",
+        "field_02": "#ffffff"
     }
 
 # =========================
@@ -352,255 +363,440 @@ class ResponseHandler:
 # 🎨 UI/UX MODULE - FLUENT DESIGN
 # =========================
 
-class FluentUI:
-    """Komponen UI dengan Microsoft Fluent Design"""
+class CarbonUI:
+    """Komponen UI dengan IBM Carbon Design System"""
     
     @staticmethod
     def inject_custom_css():
-        """Inject custom CSS untuk Fluent Design"""
+        """Inject custom CSS untuk IBM Carbon Design"""
         st.markdown(f"""
         <style>
-        /* Import Segoe UI Font (Fluent Design) */
-        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
+        /* Import IBM Plex Font Family (Carbon Design) */
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
         
-        /* Global Styles */
+        /* Global Styles - Carbon Design */
         * {{
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }}
         
         /* Main Container */
         .stApp {{
-            background: linear-gradient(135deg, {Config.FLUENT_COLORS['background']} 0%, #E1DFDD 100%);
+            background: {Config.CARBON_COLORS['ui_01']};
         }}
         
-        /* Sidebar Styling */
+        /* Sidebar Styling - Carbon */
         [data-testid="stSidebar"] {{
-            background: {Config.FLUENT_COLORS['surface']};
-            border-right: 1px solid {Config.FLUENT_COLORS['border']};
-            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            background: {Config.CARBON_COLORS['layer_02']};
+            border-right: 1px solid {Config.CARBON_COLORS['border']};
         }}
         
         [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
             padding: 0.5rem;
         }}
         
-        /* Headers */
-        h1, h2, h3 {{
-            color: {Config.FLUENT_COLORS['text_primary']};
+        /* Typography - IBM Plex */
+        h1, h2, h3, h4, h5, h6 {{
+            color: {Config.CARBON_COLORS['text_primary']};
             font-weight: 600;
-            letter-spacing: -0.02em;
+            letter-spacing: 0;
+            line-height: 1.2;
         }}
         
         h1 {{
-            font-size: 2rem;
+            font-size: 2.625rem;
+            font-weight: 300;
             margin-bottom: 1rem;
         }}
         
-        /* Buttons - Fluent Style */
+        h2 {{
+            font-size: 2rem;
+            font-weight: 400;
+        }}
+        
+        h3 {{
+            font-size: 1.75rem;
+            font-weight: 400;
+        }}
+        
+        p {{
+            color: {Config.CARBON_COLORS['text_primary']};
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }}
+        
+        /* Buttons - Carbon Design */
         .stButton > button {{
-            background: {Config.FLUENT_COLORS['primary']};
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 0.5rem 1.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: {Config.CARBON_COLORS['primary']};
+            color: {Config.CARBON_COLORS['ui_02']};
+            border: 1px solid transparent;
+            border-radius: 0;
+            padding: 0.875rem 1rem;
+            font-weight: 400;
+            font-size: 0.875rem;
+            letter-spacing: 0.16px;
+            transition: background 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+            box-shadow: none;
+            height: 48px;
+            min-width: 100px;
+            outline: 2px solid transparent;
+            outline-offset: -2px;
         }}
         
         .stButton > button:hover {{
-            background: {Config.FLUENT_COLORS['primary_hover']};
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            transform: translateY(-1px);
+            background: {Config.CARBON_COLORS['primary_hover']};
         }}
         
         .stButton > button:active {{
-            transform: translateY(0);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            background: {Config.CARBON_COLORS['accent']};
         }}
         
-        /* File Uploader */
+        .stButton > button:focus {{
+            outline: 2px solid {Config.CARBON_COLORS['primary']};
+            outline-offset: 2px;
+        }}
+        
+        /* Secondary Button */
+        .stButton.secondary > button {{
+            background: transparent;
+            color: {Config.CARBON_COLORS['primary']};
+            border: 1px solid {Config.CARBON_COLORS['primary']};
+        }}
+        
+        .stButton.secondary > button:hover {{
+            background: {Config.CARBON_COLORS['primary_hover']};
+            color: {Config.CARBON_COLORS['ui_02']};
+        }}
+        
+        /* File Uploader - Carbon */
         [data-testid="stFileUploader"] {{
-            background: white;
-            border: 2px dashed {Config.FLUENT_COLORS['border']};
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
+            background: {Config.CARBON_COLORS['field_02']};
+            border: 1px solid {Config.CARBON_COLORS['border']};
+            border-radius: 0;
+            padding: 1rem;
+            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
         }}
         
         [data-testid="stFileUploader"]:hover {{
-            border-color: {Config.FLUENT_COLORS['primary']};
-            background: #F8F9FA;
+            background: {Config.CARBON_COLORS['ui_01']};
         }}
         
-        /* Chat Messages */
+        [data-testid="stFileUploader"]:focus-within {{
+            outline: 2px solid {Config.CARBON_COLORS['primary']};
+            outline-offset: -2px;
+        }}
+        
+        /* Chat Messages - Carbon */
         .stChatMessage {{
-            background: white;
-            border-radius: 8px;
+            background: {Config.CARBON_COLORS['layer_02']};
+            border-radius: 0;
             padding: 1rem;
             margin: 0.5rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 3px solid {Config.FLUENT_COLORS['primary']};
+            border-left: 3px solid {Config.CARBON_COLORS['primary']};
+            box-shadow: none;
         }}
         
-        /* Chat Input */
+        /* Chat Input - Carbon */
         .stChatInput {{
-            border-radius: 24px;
-            border: 2px solid {Config.FLUENT_COLORS['border']};
-            background: white;
-            transition: all 0.3s ease;
+            border-radius: 0;
+            border-bottom: 1px solid {Config.CARBON_COLORS['border_strong']};
+            background: {Config.CARBON_COLORS['field_02']};
+            transition: border 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
         }}
         
         .stChatInput:focus-within {{
-            border-color: {Config.FLUENT_COLORS['primary']};
-            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+            border-bottom: 2px solid {Config.CARBON_COLORS['primary']};
+            outline: none;
         }}
         
-        /* Alerts */
-        .stAlert {{
-            border-radius: 8px;
+        /* Input Fields */
+        input, textarea {{
+            background: {Config.CARBON_COLORS['field_02']};
             border: none;
-            padding: 1rem 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-bottom: 1px solid {Config.CARBON_COLORS['ui_04']};
+            border-radius: 0;
+            padding: 0.6875rem 1rem;
+            font-size: 0.875rem;
+            color: {Config.CARBON_COLORS['text_primary']};
+            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
         }}
         
-        /* Success Alert */
+        input:focus, textarea:focus {{
+            outline: 2px solid {Config.CARBON_COLORS['primary']};
+            outline-offset: -2px;
+            border-bottom: 1px solid {Config.CARBON_COLORS['primary']};
+        }}
+        
+        /* Alerts - Carbon Notification */
+        .stAlert {{
+            border-radius: 0;
+            border-left: 3px solid;
+            padding: 1rem;
+            box-shadow: none;
+            font-size: 0.875rem;
+        }}
+        
+        /* Success Notification */
         [data-baseweb="notification"] {{
-            background: {Config.FLUENT_COLORS['success']};
-            color: white;
-            border-radius: 8px;
+            background: {Config.CARBON_COLORS['success']};
+            color: {Config.CARBON_COLORS['ui_02']};
+            border-radius: 0;
+            border-left: 3px solid {Config.CARBON_COLORS['success']};
         }}
         
-        /* Warning Alert */
+        /* Warning Notification */
         .stWarning {{
-            background: #FFF4CE;
-            border-left: 4px solid {Config.FLUENT_COLORS['warning']};
-            color: #333;
+            background: {Config.CARBON_COLORS['warning']};
+            border-left-color: {Config.CARBON_COLORS['warning']};
+            color: {Config.CARBON_COLORS['text_primary']};
         }}
         
-        /* Info Cards */
-        .info-card {{
-            background: white;
-            border-radius: 8px;
+        /* Error Notification */
+        .stError {{
+            background: {Config.CARBON_COLORS['error']};
+            border-left-color: {Config.CARBON_COLORS['error']};
+            color: {Config.CARBON_COLORS['ui_02']};
+        }}
+        
+        /* Info Notification */
+        .stInfo {{
+            background: {Config.CARBON_COLORS['primary']};
+            border-left-color: {Config.CARBON_COLORS['primary']};
+            color: {Config.CARBON_COLORS['ui_02']};
+        }}
+        
+        /* Carbon Tiles */
+        .carbon-tile {{
+            background: {Config.CARBON_COLORS['layer_02']};
+            border: 1px solid {Config.CARBON_COLORS['border']};
             padding: 1rem;
             margin: 0.5rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid {Config.FLUENT_COLORS['accent']};
+            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
         }}
         
-        /* Spinner */
+        .carbon-tile:hover {{
+            background: {Config.CARBON_COLORS['ui_01']};
+        }}
+        
+        /* Spinner - Carbon */
         .stSpinner > div {{
-            border-color: {Config.FLUENT_COLORS['primary']} transparent transparent transparent;
+            border-color: {Config.CARBON_COLORS['primary']} transparent transparent transparent;
         }}
         
-        /* Scrollbar */
+        /* Scrollbar - Carbon */
         ::-webkit-scrollbar {{
             width: 8px;
             height: 8px;
         }}
         
         ::-webkit-scrollbar-track {{
-            background: {Config.FLUENT_COLORS['background']};
+            background: {Config.CARBON_COLORS['ui_01']};
         }}
         
         ::-webkit-scrollbar-thumb {{
-            background: {Config.FLUENT_COLORS['border']};
-            border-radius: 4px;
+            background: {Config.CARBON_COLORS['ui_04']};
+            border-radius: 0;
         }}
         
         ::-webkit-scrollbar-thumb:hover {{
-            background: {Config.FLUENT_COLORS['text_secondary']};
+            background: {Config.CARBON_COLORS['border_strong']};
         }}
         
-        /* Document List */
+        /* Document List - Carbon */
         .doc-item {{
-            background: white;
+            background: {Config.CARBON_COLORS['layer_02']};
             padding: 0.75rem 1rem;
             margin: 0.5rem 0;
-            border-radius: 6px;
-            border-left: 3px solid {Config.FLUENT_COLORS['accent']};
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
+            border-left: 3px solid {Config.CARBON_COLORS['primary']};
+            transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+            font-size: 0.875rem;
         }}
         
         .doc-item:hover {{
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transform: translateX(2px);
+            background: {Config.CARBON_COLORS['ui_01']};
+            border-left-width: 4px;
         }}
         
-        /* Acrylic Effect */
-        .acrylic {{
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }}
-        
-        /* Response Container */
-        .response-container {{
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-left: 4px solid {Config.FLUENT_COLORS['primary']};
-        }}
-        
-        /* Source Badge */
-        .source-badge {{
+        /* Carbon Tag */
+        .carbon-tag {{
             display: inline-block;
-            background: {Config.FLUENT_COLORS['accent']};
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            background: {Config.CARBON_COLORS['ui_03']};
+            color: {Config.CARBON_COLORS['text_primary']};
+            padding: 0 0.5rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.32px;
+            border-radius: 0.9375rem;
             margin: 0.25rem;
         }}
         
-        /* Warning Badge */
-        .warning-badge {{
-            display: inline-block;
-            background: {Config.FLUENT_COLORS['warning']};
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
+        /* Carbon Tag - Blue */
+        .carbon-tag.blue {{
+            background: {Config.CARBON_COLORS['primary']};
+            color: {Config.CARBON_COLORS['ui_02']};
+        }}
+        
+        /* Carbon Tag - Red */
+        .carbon-tag.red {{
+            background: {Config.CARBON_COLORS['error']};
+            color: {Config.CARBON_COLORS['ui_02']};
+        }}
+        
+        /* Carbon Tag - Green */
+        .carbon-tag.green {{
+            background: {Config.CARBON_COLORS['success']};
+            color: {Config.CARBON_COLORS['ui_02']};
+        }}
+        
+        /* Carbon Tag - Yellow */
+        .carbon-tag.yellow {{
+            background: {Config.CARBON_COLORS['warning']};
+            color: {Config.CARBON_COLORS['text_primary']};
+        }}
+        
+        /* Response Container - Carbon */
+        .response-container {{
+            background: {Config.CARBON_COLORS['layer_02']};
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 3px solid {Config.CARBON_COLORS['primary']};
+        }}
+        
+        /* Notification Banner */
+        .notification-banner {{
+            background: {Config.CARBON_COLORS['warning']};
+            color: {Config.CARBON_COLORS['text_primary']};
+            padding: 0.75rem 1rem;
             margin: 0.5rem 0;
+            border-left: 3px solid #be6c00;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+        }}
+        
+        .notification-banner.error {{
+            background: {Config.CARBON_COLORS['error']};
+            color: {Config.CARBON_COLORS['ui_02']};
+            border-left-color: #a2191f;
+        }}
+        
+        .notification-banner.success {{
+            background: {Config.CARBON_COLORS['success']};
+            color: {Config.CARBON_COLORS['ui_02']};
+            border-left-color: #198038;
+        }}
+        
+        .notification-banner.info {{
+            background: {Config.CARBON_COLORS['primary']};
+            color: {Config.CARBON_COLORS['ui_02']};
+            border-left-color: {Config.CARBON_COLORS['accent']};
+        }}
+        
+        /* Carbon Breadcrumb */
+        .carbon-breadcrumb {{
+            color: {Config.CARBON_COLORS['text_secondary']};
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }}
+        
+        /* Carbon Divider */
+        hr {{
+            border: none;
+            border-top: 1px solid {Config.CARBON_COLORS['border']};
+            margin: 1rem 0;
+        }}
+        
+        /* Link Styling */
+        a {{
+            color: {Config.CARBON_COLORS['primary']};
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+        }}
+        
+        a:hover {{
+            border-bottom: 1px solid {Config.CARBON_COLORS['primary']};
+        }}
+        
+        /* Code blocks */
+        code {{
+            font-family: 'IBM Plex Mono', monospace;
+            background: {Config.CARBON_COLORS['ui_01']};
+            padding: 0.125rem 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 0;
+        }}
+        
+        pre {{
+            background: {Config.CARBON_COLORS['ui_05']};
+            color: {Config.CARBON_COLORS['ui_02']};
+            padding: 1rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            border-left: 3px solid {Config.CARBON_COLORS['primary']};
+        }}
+        
+        /* Loading State */
+        .loading-skeleton {{
+            background: linear-gradient(90deg, {Config.CARBON_COLORS['ui_03']} 25%, {Config.CARBON_COLORS['ui_01']} 50%, {Config.CARBON_COLORS['ui_03']} 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }}
+        
+        @keyframes loading {{
+            0% {{ background-position: 200% 0; }}
+            100% {{ background-position: -200% 0; }}
+        }}
+        
+        /* Focus visible for accessibility */
+        *:focus-visible {{
+            outline: 2px solid {Config.CARBON_COLORS['primary']};
+            outline-offset: 2px;
+        }}
+        
+        /* Disabled state */
+        button:disabled, input:disabled {{
+            opacity: 0.5;
+            cursor: not-allowed;
         }}
         </style>
         """, unsafe_allow_html=True)
     
     @staticmethod
     def render_header():
-        """Render header dengan Fluent Design"""
-        st.markdown("""
-        <div style='text-align: center; padding: 1rem 0;'>
-            <h1 style='color: #0078D4; font-weight: 700; margin-bottom: 0.5rem;'>
-                🤖 ReguBot
+        """Render header dengan IBM Carbon Design"""
+        st.markdown(f"""
+        <div style='padding: 2rem 0 1rem 0;'>
+            <div style='color: {Config.CARBON_COLORS['text_secondary']}; font-size: 0.875rem; margin-bottom: 0.5rem; letter-spacing: 0.16px;'>
+                SISTEM INFORMASI REGULASI
+            </div>
+            <h1 style='color: {Config.CARBON_COLORS['text_primary']}; font-weight: 300; margin: 0;'>
+                ReguBot
             </h1>
-            <p style='color: #605E5C; font-size: 1.1rem; margin: 0;'>
-                Asisten Cerdas Regulasi Pengadaan Barang/Jasa
+            <p style='color: {Config.CARBON_COLORS['text_secondary']}; font-size: 1rem; margin-top: 0.5rem;'>
+                Asisten cerdas untuk regulasi pengadaan barang dan jasa
             </p>
         </div>
         """, unsafe_allow_html=True)
     
     @staticmethod
     def render_sidebar_logo():
-        """Render logo di sidebar"""
+        """Render logo di sidebar dengan Carbon Design"""
         st.markdown(
-            "<div style='text-align:center; padding: 1rem 0;'>"
+            f"<div style='text-align:center; padding: 1.5rem 0; background: {Config.CARBON_COLORS['ui_01']};'>"
             "<img src='https://raw.githubusercontent.com/YonaFr/ReguBot/main/PBJ.png' "
-            "style='width: 120px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>"
+            "style='width: 100px;'>"
             "</div>",
             unsafe_allow_html=True
         )
     
     @staticmethod
     def render_document_item(filename: str):
-        """Render item dokumen dengan styling"""
+        """Render item dokumen dengan Carbon styling"""
         st.markdown(
             f"<div class='doc-item'>📄 {filename}</div>",
             unsafe_allow_html=True
@@ -608,11 +804,13 @@ class FluentUI:
     
     @staticmethod
     def render_response_with_badges(response: ResponseData):
-        """Render response dengan badges"""
+        """Render response dengan Carbon tags"""
         # Warning badge jika ada
         if response.warning:
             st.markdown(
-                f"<div class='warning-badge'>{response.warning}</div>",
+                f"<div class='notification-banner'>"
+                f"<strong>⚠</strong>&nbsp;&nbsp;{response.warning}"
+                f"</div>",
                 unsafe_allow_html=True
             )
         
@@ -621,25 +819,30 @@ class FluentUI:
         
         # Note jika ada
         if response.note:
-            st.info(response.note)
+            st.markdown(
+                f"<div class='notification-banner info' style='margin-top: 1rem;'>"
+                f"<strong>ℹ</strong>&nbsp;&nbsp;{response.note}"
+                f"</div>",
+                unsafe_allow_html=True
+            )
     
     @staticmethod
     def render_footer():
-        """Render footer dengan copyright"""
+        """Render footer dengan IBM Carbon Design"""
         st.markdown(
-            """
-            <div style='text-align:center; padding: 2rem 0 1rem 0; font-size:12px; color:#777;'>
-                <div style='margin-bottom: 0.5rem;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
-                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:1em;max-height:1em;margin:0 0.1em;'>
+            f"""
+            <div style='text-align:center; padding: 2rem 0 1rem 0; font-size: 0.75rem; color: {Config.CARBON_COLORS['text_secondary']};'>
+                <div style='margin-bottom: 0.75rem;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/cc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/by.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/nc.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
+                    <img src='https://mirrors.creativecommons.org/presskit/icons/sa.svg' style='max-width:1em;max-height:1em;margin:0 0.2em;opacity:0.7;'>
                 </div>
-                <div style='margin: 0.5rem 0;'>
-                    © 2025 Yona Friantina. Some rights reserved.
+                <div style='margin: 0.5rem 0; font-family: IBM Plex Sans, sans-serif; letter-spacing: 0.16px;'>
+                    © 2025 Yona Friantina
                 </div>
-                <div style='font-size:11px; color:#999;'>
-                    Built with Streamlit • Powered by Gemini AI
+                <div style='color: {Config.CARBON_COLORS['text_placeholder']}; font-size: 0.75rem; letter-spacing: 0.32px;'>
+                    Built with Streamlit × Powered by Gemini AI
                 </div>
             </div>
             """,
@@ -665,7 +868,7 @@ class ReguBotApp:
             layout="wide",
             initial_sidebar_state="expanded"
         )
-        FluentUI.inject_custom_css()
+        CarbonUI.inject_custom_css()
     
     def initialize_session_state(self):
         """Initialize session state"""
@@ -680,11 +883,11 @@ class ReguBotApp:
     def render_sidebar(self):
         """Render sidebar dengan semua komponennya"""
         with st.sidebar:
-            FluentUI.render_sidebar_logo()
+            CarbonUI.render_sidebar_logo()
             
             st.markdown("### 📂 Upload Dokumen Regulasi")
             st.markdown(
-                "<p style='font-size: 0.9rem; color: #605E5C; margin-bottom: 1rem;'>"
+                f"<p style='font-size: 0.875rem; color: {Config.CARBON_COLORS['text_secondary']}; margin-bottom: 1rem;'>"
                 "Upload file PDF regulasi untuk jawaban yang terverifikasi"
                 "</p>",
                 unsafe_allow_html=True
@@ -732,29 +935,29 @@ class ReguBotApp:
             if state["processed_files"]:
                 st.markdown("### 📚 Dokumen Terupload")
                 for filename in state["processed_files"]:
-                    FluentUI.render_document_item(filename)
+                    CarbonUI.render_document_item(filename)
                 
                 st.markdown("---")
                 
                 # Status info
                 st.markdown(
-                    "<div class='info-card'>"
-                    "<strong>✅ Status:</strong> Regulasi Terverifikasi<br>"
-                    "<small>Jawaban berdasarkan dokumen yang telah diupload</small>"
-                    "</div>",
+                    f"<div class='carbon-tile'>"
+                    f"<div style='color: {Config.CARBON_COLORS['success']}; font-weight: 600; margin-bottom: 0.25rem;'>✅ Status: Terverifikasi</div>"
+                    f"<div style='font-size: 0.75rem; color: {Config.CARBON_COLORS['text_secondary']};'>Jawaban berdasarkan dokumen yang telah diupload</div>"
+                    f"</div>",
                     unsafe_allow_html=True
                 )
             else:
                 st.markdown(
-                    "<div class='info-card' style='border-left-color: #FF8C00;'>"
-                    "<strong>⚠️ Status:</strong> Belum Ada Upload<br>"
-                    "<small>Upload regulasi untuk jawaban terverifikasi</small>"
-                    "</div>",
+                    f"<div class='carbon-tile' style='border-left: 3px solid {Config.CARBON_COLORS['warning']};'>"
+                    f"<div style='color: {Config.CARBON_COLORS['warning']}; font-weight: 600; margin-bottom: 0.25rem;'>⚠️ Status: Belum Ada Upload</div>"
+                    f"<div style='font-size: 0.75rem; color: {Config.CARBON_COLORS['text_secondary']};'>Upload regulasi untuk jawaban terverifikasi</div>"
+                    f"</div>",
                     unsafe_allow_html=True
                 )
             
             st.markdown("---")
-            FluentUI.render_footer()
+            CarbonUI.render_footer()
     
     def render_chat_interface(self):
         """Render chat interface"""
@@ -779,7 +982,7 @@ class ReguBotApp:
                         response = ResponseHandler.process_query(prompt, state)
                         
                         # Render response with proper formatting
-                        FluentUI.render_response_with_badges(response)
+                        CarbonUI.render_response_with_badges(response)
                         
                         # Prepare full response for history
                         full_response = response.output_text
@@ -806,7 +1009,7 @@ class ReguBotApp:
         self.setup_page()
         self.initialize_session_state()
         
-        FluentUI.render_header()
+        CarbonUI.render_header()
         self.render_sidebar()
         self.render_chat_interface()
 
